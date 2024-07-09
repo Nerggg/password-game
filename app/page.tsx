@@ -27,7 +27,8 @@ export default function Home() {
     ];
     return new RegExp(months.join("|"), "i").test(inputValue);
   };
-  const checkRomanNumeral = (inputValue) => /\b(I|V|X|L|C|D|M)\b/.test(inputValue);
+  // const checkRomanNumeral = (inputValue) => /\b(I|V|X|L|C|D|M)\b/.test(inputValue);
+  const checkRomanNumeral = (inputValue) => /[IVXLCDM]/.test(inputValue);
 
   useEffect(() => {
     const newWarnings = {
