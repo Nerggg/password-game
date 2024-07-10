@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 
+let fetchedImages: { answer: string; image: string }[] | null = null;
+
 export default function Home() {
   const [inputValue, setInputValue] = useState('');
   const [warnings, setWarnings] = useState({
@@ -57,24 +59,26 @@ export default function Home() {
 
   const checkRomanProduct = (inputValue: string, product: number) => {
     const romanNumerals = inputValue.match(/[IVXLCDM]+/g);
-    console.log(romanNumerals)
     if (!romanNumerals) return false;
     const romanValues = romanNumerals.map(romanToInt);
     const romanProduct = romanValues.reduce((acc, value) => acc * value, 1);
-    console.log(romanProduct)
     return romanProduct === product;
   };
 
   useEffect(() => {
-    if (showImages) {
+    if (!fetchedImages) {
       fetch('/api/images')
         .then(response => response.json())
         .then(data => {
+          fetchedImages = data;
           setImages(data);
           setCountries(data.map((img: { answer: string }) => img.answer));
         });
+    } else {
+      setImages(fetchedImages);
+      setCountries(fetchedImages.map((img: { answer: string }) => img.answer));
     }
-  }, [showImages]);
+  }, []);
 
   useEffect(() => {
     const newWarnings = {
@@ -224,21 +228,21 @@ export default function Home() {
                 <>
                   <p className="text-red-500 mt-2">{rule.unfulfilledMessage}</p>
                   <p className="text-red-500 mt-2">{rule.message}</p>
+                  {rule.images && rule.images.length > 0 && (
+                    <div className="flex flex-row items-start">
+                      {rule.images.map((img, imgIndex) => (
+                        <div key={imgIndex} className="flex flex-col items-center p-4 rounded shadow">
+                          <img
+                            src={`data:image/png;base64,${img.image}`}
+                            alt="country"
+                            className="w-40 h-auto"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </>
               ) : null}
-            {rule.images && rule.images.length > 0 && (
-              <div className="flex flex-row items-start">
-                {rule.images.map((img, imgIndex) => (
-                  <div key={imgIndex} className="flex flex-col items-center p-4 rounded shadow">
-                    <img
-                      src={`data:image/png;base64,${img.image}`}
-                      alt="country"
-                      className="w-40 h-auto"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
             </>
           )}
         </div>
