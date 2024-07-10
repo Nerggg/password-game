@@ -12,22 +12,37 @@ export default function Home() {
     digitSum: false,
     month: false,
     romanNumeral: false,
+    country: false,
   });
+  const [countries, setCountries] = useState<string[]>([]);
+  const [images, setImages] = useState<{ answer: string; image: string }[]>([]);
+  const [showImages, setShowImages] = useState(false);
 
-  const checkSpecialCharacter = (inputValue) => /[!@#$%^&*(),.?":{}|<>]/.test(inputValue);
-  const checkDigitSum = (inputValue, sum) => {
+  const checkSpecialCharacter = (inputValue: string) => /[!@#$%^&*(),.?":{}|<>]/.test(inputValue);
+  const checkDigitSum = (inputValue: string, sum: number) => {
     const digits = inputValue.match(/\d/g);
     const digitSum = digits ? digits.reduce((acc, digit) => acc + parseInt(digit), 0) : 0;
     return digitSum === sum;
   };
-  const checkMonth = (inputValue) => {
+  const checkMonth = (inputValue: string) => {
     const months = [
       "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"
     ];
     return new RegExp(months.join("|"), "i").test(inputValue);
   };
-  const checkRomanNumeral = (inputValue) => /[IVXLCDM]/.test(inputValue);
+  const checkRomanNumeral = (inputValue: string) => /[IVXLCDM]/.test(inputValue);
+
+  useEffect(() => {
+    if (showImages) {
+      fetch('/api/images')
+        .then(response => response.json())
+        .then(data => {
+          setImages(data);
+          setCountries(data.map((img: { answer: string }) => img.answer));
+        });
+    }
+  }, [showImages]);
 
   useEffect(() => {
     const newWarnings = {
@@ -38,6 +53,7 @@ export default function Home() {
       digitSum: false,
       month: false,
       romanNumeral: false,
+      country: false,
     };
 
     if (!newWarnings.length) {
@@ -58,9 +74,18 @@ export default function Home() {
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month) {
       newWarnings.romanNumeral = !checkRomanNumeral(inputValue);
     }
+    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral) {
+      newWarnings.country = !countries.some(country => inputValue.includes(country));
+    }
 
     setWarnings(newWarnings);
-  }, [inputValue]);
+
+    if (Object.values(newWarnings).slice(0, 7).every(warning => !warning)) {
+      setShowImages(true);
+    } else {
+      setShowImages(false);
+    }
+  }, [inputValue, countries]);
 
   const rules = [
     {
@@ -105,6 +130,12 @@ export default function Home() {
       fulfilledMessage: 'Rule 7 fulfilled',
       unfulfilledMessage: 'Rule 7 not fulfilled',
     },
+    {
+      name: 'country',
+      message: 'Input should contain one of the displayed countries.',
+      fulfilledMessage: 'Rule 8 fulfilled',
+      unfulfilledMessage: 'Rule 8 not fulfilled',
+    },
   ];
 
   return (
@@ -135,6 +166,21 @@ export default function Home() {
           )}
         </div>
       ))}
+      {showImages && (
+        <div className="flex flex-col items-start">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {images.map((img, index) => (
+              <div key={index} className="flex flex-col items-center p-4 rounded shadow">
+                <img
+                  src={`data:image/png;base64,${img.image}`}
+                  alt={img.answer}
+                  className="w-40 h-auto"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </main>
   );
 }
