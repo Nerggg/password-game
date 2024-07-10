@@ -13,6 +13,7 @@ export default function Home() {
     month: false,
     romanNumeral: false,
     country: false,
+    romanProduct: false,
   });
   const [countries, setCountries] = useState<string[]>([]);
   const [images, setImages] = useState<{ answer: string; image: string }[]>([]);
@@ -32,6 +33,37 @@ export default function Home() {
     return new RegExp(months.join("|"), "i").test(inputValue);
   };
   const checkRomanNumeral = (inputValue: string) => /[IVXLCDM]/.test(inputValue);
+
+  const romanToInt = (s: string): number => {
+    const romanMap: { [key: string]: number } = {
+      'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000
+    };
+    
+    let total = 0;
+    let prevValue = 0;
+    
+    for (let i = s.length - 1; i >= 0; i--) {
+      const currentValue = romanMap[s[i]];
+      if (currentValue < prevValue) {
+        total -= currentValue;
+      } else {
+        total += currentValue;
+      }
+      prevValue = currentValue;
+    }
+    
+    return total;
+  };    
+
+  const checkRomanProduct = (inputValue: string, product: number) => {
+    const romanNumerals = inputValue.match(/[IVXLCDM]+/g);
+    console.log(romanNumerals)
+    if (!romanNumerals) return false;
+    const romanValues = romanNumerals.map(romanToInt);
+    const romanProduct = romanValues.reduce((acc, value) => acc * value, 1);
+    console.log(romanProduct)
+    return romanProduct === product;
+  };
 
   useEffect(() => {
     if (showImages) {
@@ -54,6 +86,7 @@ export default function Home() {
       month: false,
       romanNumeral: false,
       country: false,
+      romanProduct: false,
     };
 
     if (!newWarnings.length) {
@@ -76,6 +109,9 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral) {
       newWarnings.country = !countries.some(country => inputValue.includes(country));
+    }
+    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country) {
+      newWarnings.romanProduct = !checkRomanProduct(inputValue, 24);
     }
 
     setWarnings(newWarnings);
@@ -135,6 +171,12 @@ export default function Home() {
       message: 'Input should contain one of the displayed countries.',
       fulfilledMessage: 'Rule 8 fulfilled',
       unfulfilledMessage: 'Rule 8 not fulfilled',
+    },
+    {
+      name: 'romanProduct',
+      message: 'The product of Roman numerals in input should equal 24.',
+      fulfilledMessage: 'Rule 9 fulfilled',
+      unfulfilledMessage: 'Rule 9 not fulfilled',
     },
   ];
 
