@@ -129,54 +129,63 @@ export default function Home() {
       message: 'Input should be at least 7 characters long.',
       fulfilledMessage: 'Rule 1 fulfilled',
       unfulfilledMessage: 'Rule 1 not fulfilled',
+      images: null,
     },
     {
       name: 'number',
       message: 'Input should contain at least one number.',
       fulfilledMessage: 'Rule 2 fulfilled',
       unfulfilledMessage: 'Rule 2 not fulfilled',
+      images: null,
     },
     {
       name: 'uppercase',
       message: 'Input should contain at least one uppercase letter.',
       fulfilledMessage: 'Rule 3 fulfilled',
       unfulfilledMessage: 'Rule 3 not fulfilled',
+      images: null,
     },
     {
       name: 'specialCharacter',
       message: 'Input should contain at least one special character.',
       fulfilledMessage: 'Rule 4 fulfilled',
       unfulfilledMessage: 'Rule 4 not fulfilled',
+      images: null,
     },
     {
       name: 'digitSum',
       message: 'Digits in input should add up to 10.',
       fulfilledMessage: 'Rule 5 fulfilled',
       unfulfilledMessage: 'Rule 5 not fulfilled',
+      images: null,
     },
     {
       name: 'month',
       message: 'Input should include a month of the year.',
       fulfilledMessage: 'Rule 6 fulfilled',
       unfulfilledMessage: 'Rule 6 not fulfilled',
+      images: null,
     },
     {
       name: 'romanNumeral',
       message: 'Input should include a Roman numeral.',
       fulfilledMessage: 'Rule 7 fulfilled',
       unfulfilledMessage: 'Rule 7 not fulfilled',
+      images: null,
     },
     {
       name: 'country',
       message: 'Input should contain one of the displayed countries.',
       fulfilledMessage: 'Rule 8 fulfilled',
       unfulfilledMessage: 'Rule 8 not fulfilled',
+      images: images,
     },
     {
       name: 'romanProduct',
       message: 'The product of Roman numerals in input should equal 24.',
       fulfilledMessage: 'Rule 9 fulfilled',
       unfulfilledMessage: 'Rule 9 not fulfilled',
+      images: null,
     },
   ];
 
@@ -195,6 +204,19 @@ export default function Home() {
             <>
               <p className="text-green-500 mt-2">{rule.fulfilledMessage}</p>
               <p className="text-green-500 mt-2">{rule.message}</p>
+              {rule.images && rule.images.length > 0 && (
+                <div className="flex flex-row items-start">
+                  {rule.images.map((img, imgIndex) => (
+                    <div key={imgIndex} className="flex flex-col items-center p-4 rounded shadow">
+                      <img
+                        src={`data:image/png;base64,${img.image}`}
+                        alt="country"
+                        className="w-40 h-auto"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </>
           ) : (
             <>
@@ -204,25 +226,23 @@ export default function Home() {
                   <p className="text-red-500 mt-2">{rule.message}</p>
                 </>
               ) : null}
+            {rule.images && rule.images.length > 0 && (
+              <div className="flex flex-row items-start">
+                {rule.images.map((img, imgIndex) => (
+                  <div key={imgIndex} className="flex flex-col items-center p-4 rounded shadow">
+                    <img
+                      src={`data:image/png;base64,${img.image}`}
+                      alt="country"
+                      className="w-40 h-auto"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
             </>
           )}
         </div>
       ))}
-      {showImages && (
-        <div className="flex flex-col items-start">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {images.map((img, index) => (
-              <div key={index} className="flex flex-col items-center p-4 rounded shadow">
-                <img
-                  src={`data:image/png;base64,${img.image}`}
-                  alt={img.answer}
-                  className="w-40 h-auto"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </main>
   );
 }
