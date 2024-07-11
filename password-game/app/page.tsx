@@ -18,6 +18,7 @@ export default function Home() {
     country: false,
     romanProduct: false,
     fire: false,
+    egg: false,
   });
   const [countries, setCountries] = useState<string[]>([]);
   const [images, setImages] = useState<{ answer: string; image: string }[]>([]);
@@ -97,6 +98,7 @@ export default function Home() {
       country: false,
       romanProduct: false,
       fire: false,
+      egg: false,
     };
 
     if (!newWarnings.length) {
@@ -127,6 +129,9 @@ export default function Home() {
       newWarnings.fire = /[🔥]/.test(inputValue);
       burn = true
     }
+    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire) {
+      newWarnings.egg = !/[🥚]/.test(inputValue);
+    }
 
     setWarnings(newWarnings);
 
@@ -152,6 +157,12 @@ export default function Home() {
       }, 2000);
     }
     return () => clearInterval(interval);
+  }, [inputValue]);
+
+  useEffect(() => {
+    if (inputValue.length === 10) {
+      setInputValue(inputValue + '🥚');
+    }
   }, [inputValue]);
 
   const rules = [
@@ -225,6 +236,13 @@ export default function Home() {
       unfulfilledMessage: 'Rule 10 not fulfilled',
       images: null,
     },
+    {
+      name: 'egg',
+      message: 'This is my chicken Paul. He hasn’t hatched yet. Please put him in your password and keep him safe',
+      fulfilledMessage: 'Rule 11 fulfilled',
+      unfulfilledMessage: 'Rule 11 not fulfilled',
+      images: null,
+    },
   ];
 
   return (
@@ -236,9 +254,9 @@ export default function Home() {
         placeholder="Type a word..."
         className="w-full p-3 text-lg border border-gray-300 rounded-lg text-black"
       />
-      {rules.map((rule, index) => (
+        {rules.slice(0).reverse().map((rule, index) => (
         <div key={rule.name}>
-          {Object.values(warnings).slice(0, index + 1).every(warning => !warning) ? (
+          {Object.values(warnings).slice(0, rules.length - index).every(warning => !warning) ? (
             <>
               <p className="text-green-500 mt-2">{rule.fulfilledMessage}</p>
               <p className="text-green-500 mt-2">{rule.message}</p>
@@ -258,7 +276,7 @@ export default function Home() {
             </>
           ) : (
             <>
-              {index === 0 || Object.values(warnings).slice(0, index).every(warning => !warning) ? (
+              {index === rules.length - 1 || Object.values(warnings).slice(0, rules.length - index - 1).every(warning => !warning) ? (
                 <>
                   <p className="text-red-500 mt-2">{rule.unfulfilledMessage}</p>
                   <p className="text-red-500 mt-2">{rule.message}</p>
