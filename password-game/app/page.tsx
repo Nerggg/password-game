@@ -7,6 +7,7 @@ let fetchedCountry: { answer: string; image: string }[] | null = null;
 let fetchedCaptcha: { answer: string; image: string }[] | null = null;
 let burn = false;
 let paulEgg = false;
+let paulChicken = false;
 
 export default function Home() {
   const [inputValue, setInputValue] = useState('');
@@ -23,7 +24,8 @@ export default function Home() {
     fire: false,
     egg: false,
     captcha: false,
-    leapYear: false
+    leapYear: false,
+    chicken: false,
   });
   const [countries, setCountries] = useState<string[]>([]);
   const [captchas, setCaptchas] = useState<string[]>([]);
@@ -133,7 +135,8 @@ export default function Home() {
       fire: false,
       egg: false,
       captcha: false,
-      leapYear: false
+      leapYear: false,
+      chicken: false,
     };
 
     if (!newWarnings.length) {
@@ -161,14 +164,15 @@ export default function Home() {
       newWarnings.romanProduct = !checkRomanProduct(inputValue, 24);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct) {
-      newWarnings.fire = /[🔥]/.test(inputValue);
+      const fireEmojiPattern = new RegExp(fireEmoji, 'g');
+      newWarnings.fire = fireEmojiPattern.test(inputValue);
       if (!burn) {
         setInputValue(prev => prev + '🔥');
         burn = true;
       }
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire) {
-      newWarnings.egg = !/[🥚]/.test(inputValue);
+      newWarnings.egg = !/[🥚🐔]/.test(inputValue);
       if (!paulEgg && !/[🔥]/.test(inputValue) && newWarnings.egg) {
         setInputValue(prev => prev + '🥚');
         paulEgg = true;
@@ -179,6 +183,13 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha) {
       newWarnings.leapYear = !checkLeapYear(inputValue);
+    }
+    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear) {
+      newWarnings.chicken = !/[🐔]/.test(inputValue);
+      if (!paulChicken && !/[🔥]/.test(inputValue) && newWarnings.chicken) {
+        setInputValue(inputValue.replace(/🥚/g, '🐔'));
+        paulChicken = true;
+      }
     }
 
     setWarnings(newWarnings);
@@ -208,7 +219,7 @@ export default function Home() {
           }
           return prev.slice(0, -1) + fireEmoji;
         });
-      }, 2000);
+      }, 5000);
     }
     return () => clearInterval(interval);
   }, [inputValue]);
@@ -303,6 +314,13 @@ export default function Home() {
       message: 'Your password must include a leap year.',
       fulfilledMessage: 'Rule 13 fulfilled',
       unfulfilledMessage: 'Rule 13 not fulfilled',
+      images: null,
+    },
+    {
+      name: 'chicken',
+      message: '🐔 Paul has hatched ! Please don’t forget to feed him. He eats X 🐛 every Y second.',
+      fulfilledMessage: 'Rule 14 fulfilled',
+      unfulfilledMessage: 'Rule 14 not fulfilled',
       images: null,
     },
   ];
