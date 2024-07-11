@@ -16,7 +16,6 @@ export default function Home() {
     romanNumeral: false,
     country: false,
     romanProduct: false,
-    fire: false,
   });
   const [countries, setCountries] = useState<string[]>([]);
   const [images, setImages] = useState<{ answer: string; image: string }[]>([]);
@@ -95,7 +94,6 @@ export default function Home() {
       romanNumeral: false,
       country: false,
       romanProduct: false,
-      fire: false,
     };
 
     if (!newWarnings.length) {
@@ -118,9 +116,6 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral) {
       newWarnings.country = !countries.some(country => inputValue.includes(country));
-    }
-    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country) {
-      newWarnings.romanProduct = !checkRomanProduct(inputValue, 24);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country) {
       newWarnings.romanProduct = !checkRomanProduct(inputValue, 24);
