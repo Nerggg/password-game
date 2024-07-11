@@ -3,7 +3,8 @@
 import { warn } from 'console';
 import { useState, useEffect, useRef } from 'react';
 
-let fetchedImages: { answer: string; image: string }[] | null = null;
+let fetchedCountry: { answer: string; image: string }[] | null = null;
+let fetchedCaptcha: { answer: string; image: string }[] | null = null;
 let burn = false;
 let paulEgg = false;
 
@@ -21,10 +22,14 @@ export default function Home() {
     romanProduct: false,
     fire: false,
     egg: false,
+    captcha: false,
   });
   const [countries, setCountries] = useState<string[]>([]);
-  const [images, setImages] = useState<{ answer: string; image: string }[]>([]);
-  const [showImages, setShowImages] = useState(false);
+  const [captchas, setCaptchas] = useState<string[]>([]);
+  const [countryImage, setCountryImage] = useState<{ answer: string; image: string }[]>([]);
+  const [captchaImage, setCaptchaImages] = useState<{ answer: string; image: string }[]>([]);
+  const [showCountry, setShowCountry] = useState(false);
+  const [showCaptcha, setShowCaptcha] = useState(false);
   const [originalValues, setOriginalValues] = useState([]);
   const intervalRef = useRef(null);
   const fireEmoji = String.fromCharCode(...[55357, 56613]);
@@ -74,17 +79,32 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (!fetchedImages) {
-      fetch('/api/images')
+    if (!fetchedCountry) {
+      fetch('/api/country')
         .then(response => response.json())
         .then(data => {
-          fetchedImages = data;
-          setImages(data);
+          fetchedCountry = data;
+          setCountryImage(data);
           setCountries(data.map((img: { answer: string }) => img.answer));
         });
     } else {
-      setImages(fetchedImages);
-      setCountries(fetchedImages.map((img: { answer: string }) => img.answer));
+      setCountryImage(fetchedCountry);
+      setCountries(fetchedCountry.map((img: { answer: string }) => img.answer));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!fetchedCaptcha) {
+      fetch('/api/captcha')
+        .then(response => response.json())
+        .then(data => {
+          fetchedCaptcha = data;
+          setCaptchaImages(data);
+          setCaptchas(data.map((img: { answer: string }) => img.answer));
+        });
+    } else {
+      setCaptchaImages(fetchedCaptcha);
+      setCaptchas(fetchedCaptcha.map((img: { answer: string }) => img.answer));
     }
   }, []);
 
@@ -101,6 +121,7 @@ export default function Home() {
       romanProduct: false,
       fire: false,
       egg: false,
+      captcha: false,
     };
 
     if (!newWarnings.length) {
@@ -141,13 +162,22 @@ export default function Home() {
         paulEgg = true;
       }
     }
+    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg) {
+      newWarnings.captcha = !captchas.some(captcha => inputValue.includes(captcha))
+    }
 
     setWarnings(newWarnings);
 
     if (Object.values(newWarnings).slice(0, 7).every(warning => !warning)) {
-      setShowImages(true);
+      setShowCountry(true);
     } else {
-      setShowImages(false);
+      setShowCountry(false);
+    }
+
+    if (Object.values(newWarnings).slice(0, 7).every(warning => !warning)) {
+      setShowCaptcha(true);
+    } else {
+      setShowCaptcha(false);
     }
   }, [inputValue, countries]);
 
@@ -223,7 +253,7 @@ export default function Home() {
       message: 'Input should contain one of the displayed countries.',
       fulfilledMessage: 'Rule 8 fulfilled',
       unfulfilledMessage: 'Rule 8 not fulfilled',
-      images: images,
+      images: countryImage,
     },
     {
       name: 'romanProduct',
@@ -245,6 +275,13 @@ export default function Home() {
       fulfilledMessage: 'Rule 11 fulfilled',
       unfulfilledMessage: 'Rule 11 not fulfilled',
       images: null,
+    },
+    {
+      name: 'captcha',
+      message: 'Input should contain one of the displayed countries.',
+      fulfilledMessage: 'Rule 12 fulfilled',
+      unfulfilledMessage: 'Rule 12 not fulfilled',
+      images: captchaImage,
     },
   ];
 
