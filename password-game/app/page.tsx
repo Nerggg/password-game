@@ -23,6 +23,7 @@ export default function Home() {
     fire: false,
     egg: false,
     captcha: false,
+    leapYear: false
   });
   const [countries, setCountries] = useState<string[]>([]);
   const [captchas, setCaptchas] = useState<string[]>([]);
@@ -78,6 +79,16 @@ export default function Home() {
     return romanProduct === product;
   };
 
+  const checkLeapYear = (inputValue: string) => {
+    const years = inputValue.match(/\d+/g)?.map(Number) || [];
+    for (const year of years) {
+      if ((year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   useEffect(() => {
     if (!fetchedCountry) {
       fetch('/api/country')
@@ -122,6 +133,7 @@ export default function Home() {
       fire: false,
       egg: false,
       captcha: false,
+      leapYear: false
     };
 
     if (!newWarnings.length) {
@@ -134,7 +146,7 @@ export default function Home() {
       newWarnings.specialCharacter = !checkSpecialCharacter(inputValue);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter) {
-      newWarnings.digitSum = !checkDigitSum(inputValue, 10);
+      newWarnings.digitSum = !checkDigitSum(inputValue, 30);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum) {
       newWarnings.month = !checkMonth(inputValue);
@@ -164,6 +176,9 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg) {
       newWarnings.captcha = !captchas.some(captcha => inputValue.includes(captcha))
+    }
+    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha) {
+      newWarnings.leapYear = !checkLeapYear(inputValue);
     }
 
     setWarnings(newWarnings);
@@ -201,63 +216,63 @@ export default function Home() {
   const rules = [
     {
       name: 'length',
-      message: 'Input should be at least 7 characters long.',
+      message: 'Your password must be at least 7 characters.',
       fulfilledMessage: 'Rule 1 fulfilled',
       unfulfilledMessage: 'Rule 1 not fulfilled',
       images: null,
     },
     {
       name: 'number',
-      message: 'Input should contain at least one number.',
+      message: 'Your password must include a number.',
       fulfilledMessage: 'Rule 2 fulfilled',
       unfulfilledMessage: 'Rule 2 not fulfilled',
       images: null,
     },
     {
       name: 'uppercase',
-      message: 'Input should contain at least one uppercase letter.',
+      message: 'Your password must include an uppercase letter.',
       fulfilledMessage: 'Rule 3 fulfilled',
       unfulfilledMessage: 'Rule 3 not fulfilled',
       images: null,
     },
     {
       name: 'specialCharacter',
-      message: 'Input should contain at least one special character.',
+      message: 'Your password must include a special character.',
       fulfilledMessage: 'Rule 4 fulfilled',
       unfulfilledMessage: 'Rule 4 not fulfilled',
       images: null,
     },
     {
       name: 'digitSum',
-      message: 'Digits in input should add up to 10.',
+      message: 'The digits in your password must add up to 30.',
       fulfilledMessage: 'Rule 5 fulfilled',
       unfulfilledMessage: 'Rule 5 not fulfilled',
       images: null,
     },
     {
       name: 'month',
-      message: 'Input should include a month of the year.',
+      message: 'Your password must include a month of the year.',
       fulfilledMessage: 'Rule 6 fulfilled',
       unfulfilledMessage: 'Rule 6 not fulfilled',
       images: null,
     },
     {
       name: 'romanNumeral',
-      message: 'Input should include a Roman numeral.',
+      message: 'Your password must include a Roman numeral.',
       fulfilledMessage: 'Rule 7 fulfilled',
       unfulfilledMessage: 'Rule 7 not fulfilled',
       images: null,
     },
     {
       name: 'country',
-      message: 'Input should contain one of the displayed countries.',
+      message: 'Your password must include one of this country.',
       fulfilledMessage: 'Rule 8 fulfilled',
       unfulfilledMessage: 'Rule 8 not fulfilled',
       images: countryImage,
     },
     {
       name: 'romanProduct',
-      message: 'The product of Roman numerals in input should equal 24.',
+      message: ' Roman numerals in your password should multiply to 24.',
       fulfilledMessage: 'Rule 9 fulfilled',
       unfulfilledMessage: 'Rule 9 not fulfilled',
       images: null,
@@ -271,17 +286,24 @@ export default function Home() {
     },
     {
       name: 'egg',
-      message: 'This is my chicken Paul. He hasn’t hatched yet. Please put him in your password and keep him safe',
+      message: 'This is my chicken Paul. He hasn’t hatched yet. Please put him in your password and keep him safe.',
       fulfilledMessage: 'Rule 11 fulfilled',
       unfulfilledMessage: 'Rule 11 not fulfilled',
       images: null,
     },
     {
       name: 'captcha',
-      message: 'Input should contain one of the displayed countries.',
+      message: 'Your password must include this CAPTCHA.',
       fulfilledMessage: 'Rule 12 fulfilled',
       unfulfilledMessage: 'Rule 12 not fulfilled',
       images: captchaImage,
+    },
+    {
+      name: 'leapYear',
+      message: 'Your password must include a leap year.',
+      fulfilledMessage: 'Rule 13 fulfilled',
+      unfulfilledMessage: 'Rule 13 not fulfilled',
+      images: null,
     },
   ];
 
