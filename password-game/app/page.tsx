@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react';
 
 let fetchedImages: { answer: string; image: string }[] | null = null;
 let burn = false;
+let paulEgg = false;
 
 export default function Home() {
   const [inputValue, setInputValue] = useState('');
@@ -128,12 +129,16 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct) {
       newWarnings.fire = /[🔥]/.test(inputValue);
-      burn = true
+      if (!burn) {
+        setInputValue(prev => prev + '🔥');
+        burn = true;
+      }
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire) {
       newWarnings.egg = !/[🥚]/.test(inputValue);
-      if (newWarnings.egg) {
+      if (!paulEgg && !/[🔥]/.test(inputValue) && newWarnings.egg) {
         setInputValue(prev => prev + '🥚');
+        paulEgg = true;
       }
     }
 
