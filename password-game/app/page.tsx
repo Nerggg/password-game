@@ -1,5 +1,6 @@
 'use client';
 
+import { warn } from 'console';
 import { useState, useEffect, useRef } from 'react';
 
 let fetchedImages: { answer: string; image: string }[] | null = null;
@@ -131,6 +132,9 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire) {
       newWarnings.egg = !/[🥚]/.test(inputValue);
+      if (newWarnings.egg) {
+        setInputValue(prev => prev + '🥚');
+      }
     }
 
     setWarnings(newWarnings);
@@ -157,12 +161,6 @@ export default function Home() {
       }, 2000);
     }
     return () => clearInterval(interval);
-  }, [inputValue]);
-
-  useEffect(() => {
-    if (inputValue.length === 10) {
-      setInputValue(inputValue + '🥚');
-    }
   }, [inputValue]);
 
   const rules = [
