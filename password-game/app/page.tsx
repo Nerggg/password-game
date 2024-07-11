@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 
 let fetchedImages: { answer: string; image: string }[] | null = null;
+let burn = false;
 
 export default function Home() {
   const [inputValue, setInputValue] = useState('');
@@ -122,8 +123,9 @@ export default function Home() {
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country) {
       newWarnings.romanProduct = !checkRomanProduct(inputValue, 24);
     }
-    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country) {
-      newWarnings.romanProduct = !checkRomanProduct(inputValue, 24);
+    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct) {
+      newWarnings.fire = /[🔥]/.test(inputValue);
+      burn = true
     }
 
     setWarnings(newWarnings);
@@ -137,7 +139,7 @@ export default function Home() {
 
   useEffect(() => {
     let interval;
-    if (inputValue.length >= 10) {
+    if (burn) {
       interval = setInterval(() => {
         setInputValue((prev) => {
           for (let i = 0; i < prev.length - 1; i++) {
@@ -214,6 +216,13 @@ export default function Home() {
       message: 'The product of Roman numerals in input should equal 24.',
       fulfilledMessage: 'Rule 9 fulfilled',
       unfulfilledMessage: 'Rule 9 not fulfilled',
+      images: null,
+    },
+    {
+      name: 'fire',
+      message: 'Oh no! Your password is on fire 🔥. Quick, put it out!',
+      fulfilledMessage: 'Rule 10 fulfilled',
+      unfulfilledMessage: 'Rule 10 not fulfilled',
       images: null,
     },
   ];
