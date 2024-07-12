@@ -1,5 +1,6 @@
 'use client';
 
+import handler from '@/pages/api/captcha';
 import { log, warn } from 'console';
 import { useState, useEffect, useRef } from 'react';
 
@@ -10,6 +11,14 @@ let paulEgg = false;
 let paulChicken = false;
 
 export default function Home() {
+  const handleInputValue = (e) => {
+    const valueLower = e.target.value.toLowerCase();
+    const containsRestrictedChars = restrictedChars.some(char => valueLower.includes(char));
+    if (!containsRestrictedChars) {
+      setInputValue(e.target.value);
+    }
+  };
+
   const [inputValue, setInputValue] = useState('');
   const [warnings, setWarnings] = useState({
     length: false,
@@ -26,6 +35,7 @@ export default function Home() {
     captcha: false,
     leapYear: false,
     chicken: false,
+    sacrifice: false,
   });
   const [countries, setCountries] = useState<string[]>([]);
   const [captchas, setCaptchas] = useState<string[]>([]);
@@ -43,6 +53,9 @@ export default function Home() {
   const eggPattern = new RegExp(eggEmoji, 'g');
   const chickenEmoji = String.fromCharCode(...[55357, 56340]);
   const chickenPattern = new RegExp(chickenEmoji, 'g');
+  const [rule15InputValue, setRule15InputValue] = useState('');
+  const [restrictedChars, setRestrictedChars] = useState([]);
+  const [showRule15, setShowRule15] = useState(false);
 
   const checkSpecialCharacter = (inputValue: string) => /[!@#$%^&*(),.?":{}|<>]/.test(inputValue);
   const checkDigitSum = (inputValue: string, sum: number) => {
@@ -144,6 +157,7 @@ export default function Home() {
       captcha: false,
       leapYear: false,
       chicken: false,
+      sacrifice: false,
     };
 
     if (!newWarnings.length) {
@@ -176,29 +190,34 @@ export default function Home() {
           setInputValue(prev => prev + '🔥');
           burn = true;
         }
+    }
+    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire) {
+      newWarnings.egg = !/[🥚🐔]/.test(inputValue);
+      if (!paulEgg && !fireEmojiPattern.test(inputValue) && newWarnings.egg) {
+        setInputValue(prev => prev + '🥚');
+        paulEgg = true;
       }
-      if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire) {
-        newWarnings.egg = !/[🥚🐔]/.test(inputValue);
-        if (!paulEgg && !fireEmojiPattern.test(inputValue) && newWarnings.egg) {
-          setInputValue(prev => prev + '🥚');
-          paulEgg = true;
-        }
+    }
+    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg) {
+      newWarnings.captcha = !captchas.some(captcha => inputValue.includes(captcha))
+    }
+    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha) {
+      newWarnings.leapYear = !checkLeapYear(inputValue);
+    }
+    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear) {
+      newWarnings.chicken = !caterpillarPattern.test(inputValue);
+      if (!paulChicken && !fireEmojiPattern.test(inputValue) && newWarnings.chicken) {
+        paulChicken = true;
+        setInputValue(inputValue.replace(/🥚/g, chickenEmoji));
+        setInputValue(prev => prev + '🐛🐛🐛🐛🐛🐛')
       }
-      if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg) {
-        newWarnings.captcha = !captchas.some(captcha => inputValue.includes(captcha))
+    }
+    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken) {
+      if (restrictedChars.length === 0) {
+        setShowRule15(true);
       }
-      if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha) {
-        newWarnings.leapYear = !checkLeapYear(inputValue);
-      }
-      if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear) {
-        newWarnings.chicken = !caterpillarPattern.test(inputValue);
-        if (!paulChicken && !fireEmojiPattern.test(inputValue) && newWarnings.chicken) {
-          paulChicken = true;
-          console.log("masuk")
-          setInputValue(inputValue.replace(/🥚/g, chickenEmoji));
-          setInputValue(prev => prev + '🐛🐛🐛🐛🐛🐛')
-        }
-      }
+      newWarnings.sacrifice = (restrictedChars.length === 0);
+    }
 
     setWarnings(newWarnings);
 
@@ -247,6 +266,18 @@ export default function Home() {
     }, 10000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleRule15InputChange = (e) => {
+    const value = e.target.value;
+    const uniqueValue = Array.from(new Set(value)).slice(0, 2).join('');
+    setRule15InputValue(uniqueValue);
+  };
+
+  const handleRule15Click = () => {
+    setRestrictedChars(rule15InputValue.split(''));
+    setRule15InputValue('');
+    setShowRule15(false);
+  };
 
   const rules = [
     {
@@ -347,6 +378,13 @@ export default function Home() {
       unfulfilledMessage: 'Rule 14 not fulfilled',
       images: null,
     },
+    {
+      name: 'sacrifice',
+      message: 'A sacrifice must be made. Pick 2 letters that you will no longer be able to use.',
+      fulfilledMessage: 'Rule 15 fulfilled',
+      unfulfilledMessage: 'Rule 15 not fulfilled',
+      images: null,
+    },
   ];
 
   return (
@@ -354,10 +392,29 @@ export default function Home() {
       <input
         type="text"
         value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
+        onChange={handleInputValue}
         placeholder="Type a word..."
         className="w-full p-3 text-lg border border-gray-300 rounded-lg text-black"
       />
+      {showRule15 && (
+        <div className="mt-3 flex">
+          <input
+            type="text"
+            value={rule15InputValue}
+            onChange={handleRule15InputChange}
+            placeholder="Type 2 chars..."
+            className="w-1/3 p-3 text-lg border border-gray-300 rounded-lg text-black"
+          />
+          {rule15InputValue.length == 2 && (
+          <button
+            onClick={handleRule15Click}
+            className="ml-3 p-3 bg-blue-500 text-white rounded-lg"
+          >
+            Enter
+          </button>
+          )}
+        </div>
+      )}
         {rules.slice(0).reverse().map((rule, index) => (
         <div key={rule.name}>
           {Object.values(warnings).slice(0, rules.length - index).every(warning => !warning) ? (
