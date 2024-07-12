@@ -1,6 +1,6 @@
 'use client';
 
-import { warn } from 'console';
+import { log, warn } from 'console';
 import { useState, useEffect, useRef } from 'react';
 
 let fetchedCountry: { answer: string; image: string }[] | null = null;
@@ -36,6 +36,13 @@ export default function Home() {
   const [originalValues, setOriginalValues] = useState([]);
   const intervalRef = useRef(null);
   const fireEmoji = String.fromCharCode(...[55357, 56613]);
+  const fireEmojiPattern = new RegExp(fireEmoji, 'g');
+  const caterpillarEmoji = String.fromCharCode(...[55357, 56347]);
+  const caterpillarPattern = new RegExp(caterpillarEmoji, 'g');
+  const eggEmoji = String.fromCharCode(...[55358, 56666]);
+  const eggPattern = new RegExp(eggEmoji, 'g');
+  const chickenEmoji = String.fromCharCode(...[55357, 56340]);
+  const chickenPattern = new RegExp(chickenEmoji, 'g');
 
   const checkSpecialCharacter = (inputValue: string) => /[!@#$%^&*(),.?":{}|<>]/.test(inputValue);
   const checkDigitSum = (inputValue: string, sum: number) => {
@@ -164,33 +171,34 @@ export default function Home() {
       newWarnings.romanProduct = !checkRomanProduct(inputValue, 24);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct) {
-      const fireEmojiPattern = new RegExp(fireEmoji, 'g');
       newWarnings.fire = fireEmojiPattern.test(inputValue);
       if (!burn) {
-        setInputValue(prev => prev + '🔥');
-        burn = true;
+          setInputValue(prev => prev + '🔥');
+          burn = true;
+        }
       }
-    }
-    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire) {
-      newWarnings.egg = !/[🥚🐔]/.test(inputValue);
-      if (!paulEgg && !/[🔥]/.test(inputValue) && newWarnings.egg) {
-        setInputValue(prev => prev + '🥚');
-        paulEgg = true;
+      if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire) {
+        newWarnings.egg = !/[🥚🐔]/.test(inputValue);
+        if (!paulEgg && !fireEmojiPattern.test(inputValue) && newWarnings.egg) {
+          setInputValue(prev => prev + '🥚');
+          paulEgg = true;
+        }
       }
-    }
-    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg) {
-      newWarnings.captcha = !captchas.some(captcha => inputValue.includes(captcha))
-    }
-    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha) {
-      newWarnings.leapYear = !checkLeapYear(inputValue);
-    }
-    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear) {
-      newWarnings.chicken = !/[🐔]/.test(inputValue);
-      if (!paulChicken && !/[🔥]/.test(inputValue) && newWarnings.chicken) {
-        setInputValue(inputValue.replace(/🥚/g, '🐔'));
-        paulChicken = true;
+      if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg) {
+        newWarnings.captcha = !captchas.some(captcha => inputValue.includes(captcha))
       }
-    }
+      if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha) {
+        newWarnings.leapYear = !checkLeapYear(inputValue);
+      }
+      if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear) {
+        newWarnings.chicken = !caterpillarPattern.test(inputValue);
+        if (!paulChicken && !fireEmojiPattern.test(inputValue) && newWarnings.chicken) {
+          paulChicken = true;
+          console.log("masuk")
+          setInputValue(inputValue.replace(/🥚/g, chickenEmoji));
+          setInputValue(prev => prev + '🐛🐛🐛🐛🐛🐛')
+        }
+      }
 
     setWarnings(newWarnings);
 
@@ -208,21 +216,37 @@ export default function Home() {
   }, [inputValue, countries]);
 
   useEffect(() => {
-    let interval;
-    if (burn) {
-      interval = setInterval(() => {
-        setInputValue((prev) => {
+    const interval = setInterval(() => {
+      setInputValue(prev => {
+        if (burn) {
           for (let i = 0; i < prev.length - 1; i++) {
             if (String.fromCharCode(...[prev[i].charCodeAt(0), prev[i+1].charCodeAt(0)]) === fireEmoji) {
               return prev.slice(0, i-1) + prev.slice(i) + fireEmoji;
             }
           }
           return prev.slice(0, -1) + fireEmoji;
-        });
-      }, 5000);
-    }
+        }
+        return prev;
+      });
+    }, 5000);
     return () => clearInterval(interval);
-  }, [inputValue]);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setInputValue(prevValue => {
+        if (paulChicken) {
+          let newValue = prevValue;
+          for (let i = 0; i < 3; i++) {
+            newValue = newValue.replace('🐛', '');
+          }
+          return newValue;
+        }
+        return prevValue;
+      });
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   const rules = [
     {
@@ -318,7 +342,7 @@ export default function Home() {
     },
     {
       name: 'chicken',
-      message: '🐔 Paul has hatched ! Please don’t forget to feed him. He eats X 🐛 every Y second.',
+      message: '🐔 Paul has hatched ! Please don’t forget to feed him. He eats 3 🐛 every 10 second.',
       fulfilledMessage: 'Rule 14 fulfilled',
       unfulfilledMessage: 'Rule 14 not fulfilled',
       images: null,
