@@ -23,6 +23,7 @@ export default function Home() {
     else {
       setInputValue(e.target.value);
     }
+    console.log("current length: ", inputValue.length);
   };
 
   const [inputValue, setInputValue] = useState('');
@@ -46,6 +47,7 @@ export default function Home() {
     digits: false,
     includeLength: false,
     prime: false,
+    time: false,
   });
   const [countries, setCountries] = useState<string[]>([]);
   const [captchas, setCaptchas] = useState<string[]>([]);
@@ -71,6 +73,7 @@ export default function Home() {
   const checkDigitSum = (inputValue: string, sum: number) => {
     const digits = inputValue.match(/\d/g);
     const digitSum = digits ? digits.reduce((acc, digit) => acc + parseInt(digit), 0) : 0;
+    console.log("current sum: ", digitSum);
     return digitSum === sum;
   };
   const checkMonth = (inputValue: string) => {
@@ -129,6 +132,13 @@ export default function Home() {
     return true;
   };
 
+  const getCurrentTime = () => {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
+
   useEffect(() => {
     if (!fetchedCountry) {
       fetch('/api/country')
@@ -180,6 +190,7 @@ export default function Home() {
       digits: false,
       includeLength: false,
       prime: false,
+      time: false,
     };
 
     if (!newWarnings.length) {
@@ -192,7 +203,7 @@ export default function Home() {
       newWarnings.specialCharacter = !checkSpecialCharacter(inputValue);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter) {
-      newWarnings.digitSum = !checkDigitSum(inputValue, 30);
+      newWarnings.digitSum = !checkDigitSum(inputValue, 50);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum) {
       newWarnings.month = !checkMonth(inputValue);
@@ -251,10 +262,12 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken && !newWarnings.sacrifice && !newWarnings.words && !newWarnings.digits) {
       newWarnings.includeLength = !inputValue.includes(inputValue.length.toString());
-      console.log(inputValue.length);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken && !newWarnings.sacrifice && !newWarnings.words && !newWarnings.digits && !newWarnings.includeLength) {
       newWarnings.prime = !isPrime(inputValue.length);
+    }
+    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken && !newWarnings.sacrifice && !newWarnings.words && !newWarnings.digits && !newWarnings.includeLength && !newWarnings.prime) {
+      newWarnings.time = !inputValue.includes(getCurrentTime());
     }
 
     setWarnings(newWarnings);
@@ -348,7 +361,7 @@ export default function Home() {
     },
     {
       name: 'digitSum',
-      message: 'The digits in your password must add up to 30.',
+      message: 'The digits in your password must add up to 50.',
       fulfilledMessage: 'Rule 5 fulfilled',
       unfulfilledMessage: 'Rule 5 not fulfilled',
       images: null,
@@ -449,6 +462,13 @@ export default function Home() {
       message: 'The length of your password must be a prime number.',
       fulfilledMessage: 'Rule 19 fulfilled',
       unfulfilledMessage: 'Rule 19 not fulfilled',
+      images: null,
+    },
+    {
+      name: 'time',
+      message: 'Your password must include the current time in the format of HH:MM.',
+      fulfilledMessage: 'Rule 20 fulfilled',
+      unfulfilledMessage: 'Rule 20 not fulfilled',
       images: null,
     },
   ];
