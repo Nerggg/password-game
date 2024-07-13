@@ -1,5 +1,5 @@
 'use client';
-
+// 111111111111111111111aaaaAugust@IVbrailVI🐔🐛🐛🐛🐛🐛🐛I want IRKjapan72
 import handler from '@/pages/api/captcha';
 import { log, warn } from 'console';
 import { ClientPageRoot } from 'next/dist/client/components/client-page';
@@ -44,6 +44,7 @@ export default function Home() {
     sacrifice: false,
     words: false,
     digits: false,
+    includeLength: false,
   });
   const [countries, setCountries] = useState<string[]>([]);
   const [captchas, setCaptchas] = useState<string[]>([]);
@@ -168,6 +169,7 @@ export default function Home() {
       sacrifice: false,
       words: false,
       digits: false,
+      includeLength: false,
     };
 
     if (!newWarnings.length) {
@@ -196,10 +198,10 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct) {
       newWarnings.fire = fireEmojiPattern.test(inputValue);
-      if (!burn) {
-          setInputValue(prev => prev + '🔥');
-          burn = true;
-        }
+      // if (!burn) {
+      //     setInputValue(prev => prev + '🔥');
+      //     burn = true;
+      //   }
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire) {
       newWarnings.egg = !/[🥚🐔]/.test(inputValue);
@@ -209,7 +211,7 @@ export default function Home() {
       }
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg) {
-      newWarnings.captcha = !captchas.some(captcha => inputValue.includes(captcha))
+      // newWarnings.captcha = !captchas.some(captcha => inputValue.includes(captcha))
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha) {
       newWarnings.leapYear = !checkLeapYear(inputValue);
@@ -236,6 +238,9 @@ export default function Home() {
       const digitCount = (inputValue.match(/\d/g) || []).length;
       const percentage = (digitCount / inputValue.length) * 100;
       newWarnings.digits = !(percentage >= 30);
+    }
+    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken && !newWarnings.sacrifice && !newWarnings.words && !newWarnings.digits) {
+      newWarnings.includeLength = !inputValue.includes(inputValue.length.toString());
     }
 
     setWarnings(newWarnings);
@@ -416,6 +421,13 @@ export default function Home() {
       message: 'At least 30% of your password must be in digits.',
       fulfilledMessage: 'Rule 17 fulfilled',
       unfulfilledMessage: 'Rule 17 not fulfilled',
+      images: null,
+    },
+    {
+      name: 'includeLength',
+      message: 'Your password must include the length of your password.',
+      fulfilledMessage: 'Rule 18 fulfilled',
+      unfulfilledMessage: 'Rule 18 not fulfilled',
       images: null,
     },
   ];
