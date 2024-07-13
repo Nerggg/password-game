@@ -17,8 +17,6 @@ export default function Home() {
     const containsRestrictedChars = restrictedChars.some(char => valueLower.includes(char));
     if (containsRestrictedChars && restrictedChars.length !== 0) {
       const regex = new RegExp(`[${restrictedChars[0].toLowerCase()}${restrictedChars[1].toLowerCase()}${restrictedChars[0].toUpperCase()}${restrictedChars[1].toUpperCase()}]`, 'g');
-      console.log(restrictedChars);
-      console.log(regex);
       const updatedValue = inputValue.replace(regex, '');
       setInputValue(updatedValue);
     }
@@ -44,6 +42,8 @@ export default function Home() {
     leapYear: false,
     chicken: false,
     sacrifice: false,
+    words: false,
+    digits: false,
   });
   const [countries, setCountries] = useState<string[]>([]);
   const [captchas, setCaptchas] = useState<string[]>([]);
@@ -166,6 +166,8 @@ export default function Home() {
       leapYear: false,
       chicken: false,
       sacrifice: false,
+      words: false,
+      digits: false,
     };
 
     if (!newWarnings.length) {
@@ -194,10 +196,10 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct) {
       newWarnings.fire = fireEmojiPattern.test(inputValue);
-      // if (!burn) {
-      //     setInputValue(prev => prev + '🔥');
-      //     burn = true;
-      //   }
+      if (!burn) {
+          setInputValue(prev => prev + '🔥');
+          burn = true;
+        }
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire) {
       newWarnings.egg = !/[🥚🐔]/.test(inputValue);
@@ -207,7 +209,7 @@ export default function Home() {
       }
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg) {
-      // newWarnings.captcha = !captchas.some(captcha => inputValue.includes(captcha))
+      newWarnings.captcha = !captchas.some(captcha => inputValue.includes(captcha))
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha) {
       newWarnings.leapYear = !checkLeapYear(inputValue);
@@ -225,6 +227,15 @@ export default function Home() {
         setShowRule15(true);
       }
       newWarnings.sacrifice = (restrictedChars.length === 0);
+    }
+    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken && !newWarnings.sacrifice) {
+      const validPhrases = ["I want IRK", "I need IRK", "I love IRK"];
+      newWarnings.words = !validPhrases.some(phrase => inputValue.includes(phrase));
+    }
+    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken && !newWarnings.sacrifice && !newWarnings.words) {
+      const digitCount = (inputValue.match(/\d/g) || []).length;
+      const percentage = (digitCount / inputValue.length) * 100;
+      newWarnings.digits = !(percentage >= 30);
     }
 
     setWarnings(newWarnings);
@@ -391,6 +402,20 @@ export default function Home() {
       message: 'A sacrifice must be made. Pick 2 letters that you will no longer be able to use.',
       fulfilledMessage: 'Rule 15 fulfilled',
       unfulfilledMessage: 'Rule 15 not fulfilled',
+      images: null,
+    },
+    {
+      name: 'words',
+      message: 'Your password must contain one of the following words: I want IRK | I need IRK | I love IRK.',
+      fulfilledMessage: 'Rule 16 fulfilled',
+      unfulfilledMessage: 'Rule 16 not fulfilled',
+      images: null,
+    },
+    {
+      name: 'digits',
+      message: 'At least 30% of your password must be in digits.',
+      fulfilledMessage: 'Rule 17 fulfilled',
+      unfulfilledMessage: 'Rule 17 not fulfilled',
       images: null,
     },
   ];
