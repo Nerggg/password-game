@@ -1,5 +1,5 @@
 'use client';
-// 111111111111111111111aaaaAugust@IVbrailVI🐔🐛🐛🐛🐛🐛🐛I want IRKjapan72
+// 11111111113111111111aaaaAugust@IVbrailVI🐔🐛🐛🐛🐛🐛🐛I want IRKjapan71
 import handler from '@/pages/api/captcha';
 import { log, warn } from 'console';
 import { ClientPageRoot } from 'next/dist/client/components/client-page';
@@ -45,6 +45,7 @@ export default function Home() {
     words: false,
     digits: false,
     includeLength: false,
+    prime: false,
   });
   const [countries, setCountries] = useState<string[]>([]);
   const [captchas, setCaptchas] = useState<string[]>([]);
@@ -120,6 +121,14 @@ export default function Home() {
     return false;
   }
 
+  const isPrime = (num) => {
+    if (num <= 1) return false;
+    for (let i = 2; i <= Math.sqrt(num); i++) {
+      if (num % i === 0) return false;
+    }
+    return true;
+  };
+
   useEffect(() => {
     if (!fetchedCountry) {
       fetch('/api/country')
@@ -170,6 +179,7 @@ export default function Home() {
       words: false,
       digits: false,
       includeLength: false,
+      prime: false,
     };
 
     if (!newWarnings.length) {
@@ -198,10 +208,10 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct) {
       newWarnings.fire = fireEmojiPattern.test(inputValue);
-      // if (!burn) {
-      //     setInputValue(prev => prev + '🔥');
-      //     burn = true;
-      //   }
+      if (!burn) {
+          setInputValue(prev => prev + '🔥');
+          burn = true;
+        }
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire) {
       newWarnings.egg = !/[🥚🐔]/.test(inputValue);
@@ -211,7 +221,7 @@ export default function Home() {
       }
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg) {
-      // newWarnings.captcha = !captchas.some(captcha => inputValue.includes(captcha))
+      newWarnings.captcha = !captchas.some(captcha => inputValue.includes(captcha))
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha) {
       newWarnings.leapYear = !checkLeapYear(inputValue);
@@ -241,6 +251,10 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken && !newWarnings.sacrifice && !newWarnings.words && !newWarnings.digits) {
       newWarnings.includeLength = !inputValue.includes(inputValue.length.toString());
+      console.log(inputValue.length);
+    }
+    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken && !newWarnings.sacrifice && !newWarnings.words && !newWarnings.digits && !newWarnings.includeLength) {
+      newWarnings.prime = !isPrime(inputValue.length);
     }
 
     setWarnings(newWarnings);
@@ -428,6 +442,13 @@ export default function Home() {
       message: 'Your password must include the length of your password.',
       fulfilledMessage: 'Rule 18 fulfilled',
       unfulfilledMessage: 'Rule 18 not fulfilled',
+      images: null,
+    },
+    {
+      name: 'prime',
+      message: 'The length of your password must be a prime number.',
+      fulfilledMessage: 'Rule 19 fulfilled',
+      unfulfilledMessage: 'Rule 19 not fulfilled',
       images: null,
     },
   ];
