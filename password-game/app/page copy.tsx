@@ -1,43 +1,40 @@
 'use client';
 import React, { useState } from 'react';
 
-const highlightNumbers = (text) => {
-  return text.split('').map((char, index) => {
-    if (/\d/.test(char)) {
-      return (
-        <span key={index} className="bg-red-500">
-          {char}
-        </span>
-      );
-    }
-    return char;
-  });
-};
-
-const HighlightInput = () => {
+const App = () => {
   const [inputValue, setInputValue] = useState('');
 
-  const handleInputValue = (e) => {
-    setInputValue(e.target.value);
+  const handleInputValue = (event) => {
+    setInputValue(event.target.value);
+  };
+
+  const highlightNumbers = (text) => {
+    return text.split('').map((char, index) => {
+      if (/\d/.test(char)) {
+        return (
+          <span key={index} className="bg-red-500 z-10">
+            {char}
+          </span>
+        );
+      }
+      return char;
+    });
   };
 
   return (
-    <div className="relative w-full">
-      <div className="absolute inset-0 flex items-center p-3 text-lg border border-gray-300 rounded-lg pointer-events-none bg-white">
-        <span className="invisible">{inputValue}</span>
-        <div className="absolute inset-0 flex items-center p-3 pointer-events-none">
-          {highlightNumbers(inputValue)}
-        </div>
-      </div>
+    <div>
       <input
         type="text"
         value={inputValue}
         onChange={handleInputValue}
         placeholder="Type a word..."
-        className="w-full p-3 text-lg border border-gray-300 rounded-lg text-black bg-white caret-black relative z-10 bg-transparent"
+        className="absolute w-full p-3 text-lg border border-gray-300 rounded-lg text-transparent caret-black"
       />
+      <div className="absolute p-[13px] text-lg z-10 text-black">
+        {highlightNumbers(inputValue)}
+      </div>
     </div>
   );
 };
 
-export default HighlightInput;
+export default App;
