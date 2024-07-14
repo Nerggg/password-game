@@ -24,8 +24,10 @@ export default function Home() {
       setInputValue(e.target.value);
     }
     console.log("current length: ", inputValue.length);
+    console.log("current rule: ", currentRule);
   };
 
+  const [currentRule, setCurrentRule] = useState(1);
   const [inputValue, setInputValue] = useState('');
   const [warnings, setWarnings] = useState({
     length: false,
@@ -139,6 +141,19 @@ export default function Home() {
     return `${hours}:${minutes}`;
   };
 
+  const highlight = (text) => {
+    return text.split('').map((char, index) => {
+      if (/\d/.test(char)) {
+        return (
+          <span key={index} className="bg-red-500 z-10">
+            {char}
+          </span>
+        );
+      }
+      return char;
+    });
+  };
+
   useEffect(() => {
     if (!fetchedCountry) {
       fetch('/api/country')
@@ -194,37 +209,47 @@ export default function Home() {
     };
 
     if (!newWarnings.length) {
+      setCurrentRule(2);
       newWarnings.number = !/\d/.test(inputValue);
     }
     if (!newWarnings.length && !newWarnings.number) {
+      setCurrentRule(3);
       newWarnings.uppercase = !/[A-Z]/.test(inputValue);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase) {
+      setCurrentRule(4);
       newWarnings.specialCharacter = !checkSpecialCharacter(inputValue);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter) {
+      setCurrentRule(5);
       newWarnings.digitSum = !checkDigitSum(inputValue, 50);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum) {
+      setCurrentRule(6);
       newWarnings.month = !checkMonth(inputValue);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month) {
+      setCurrentRule(7);
       newWarnings.romanNumeral = !checkRomanNumeral(inputValue);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral) {
+      setCurrentRule(8);
       newWarnings.country = !countries.some(country => inputValue.includes(country));
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country) {
+      setCurrentRule(9);
       newWarnings.romanProduct = !checkRomanProduct(inputValue, 24);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct) {
+      setCurrentRule(10);
       newWarnings.fire = fireEmojiPattern.test(inputValue);
       if (!burn) {
-          setInputValue(prev => prev + '🔥');
-          burn = true;
-        }
+        setInputValue(prev => prev + '🔥');
+        burn = true;
+      }
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire) {
+      setCurrentRule(11);
       newWarnings.egg = !/[🥚🐔]/.test(inputValue);
       if (!paulEgg && !fireEmojiPattern.test(inputValue) && newWarnings.egg) {
         setInputValue(prev => prev + '🥚');
@@ -232,12 +257,15 @@ export default function Home() {
       }
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg) {
+      setCurrentRule(12);
       newWarnings.captcha = !captchas.some(captcha => inputValue.includes(captcha))
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha) {
+      setCurrentRule(13);
       newWarnings.leapYear = !checkLeapYear(inputValue);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear) {
+      setCurrentRule(14);
       newWarnings.chicken = !caterpillarPattern.test(inputValue);
       if (!paulChicken && !fireEmojiPattern.test(inputValue) && newWarnings.chicken) {
         paulChicken = true;
@@ -246,27 +274,33 @@ export default function Home() {
       }
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken) {
+      setCurrentRule(15);
       if (restrictedChars.length === 0) {
         setShowRule15(true);
       }
       newWarnings.sacrifice = (restrictedChars.length === 0);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken && !newWarnings.sacrifice) {
+      setCurrentRule(16);
       const validPhrases = ["I want IRK", "I need IRK", "I love IRK"];
       newWarnings.words = !validPhrases.some(phrase => inputValue.includes(phrase));
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken && !newWarnings.sacrifice && !newWarnings.words) {
+      setCurrentRule(17);
       const digitCount = (inputValue.match(/\d/g) || []).length;
       const percentage = (digitCount / inputValue.length) * 100;
       newWarnings.digits = !(percentage >= 30);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken && !newWarnings.sacrifice && !newWarnings.words && !newWarnings.digits) {
+      setCurrentRule(18);
       newWarnings.includeLength = !inputValue.includes(inputValue.length.toString());
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken && !newWarnings.sacrifice && !newWarnings.words && !newWarnings.digits && !newWarnings.includeLength) {
+      setCurrentRule(19);
       newWarnings.prime = !isPrime(inputValue.length);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken && !newWarnings.sacrifice && !newWarnings.words && !newWarnings.digits && !newWarnings.includeLength && !newWarnings.prime) {
+      setCurrentRule(20);
       newWarnings.time = !inputValue.includes(getCurrentTime());
     }
 
@@ -480,8 +514,11 @@ export default function Home() {
         value={inputValue}
         onChange={handleInputValue}
         placeholder="Type a word..."
-        className="w-full p-3 text-lg border border-gray-300 rounded-lg text-black"
+        className="absolute top-0 w-full p-3 text-lg border border-gray-300 rounded-lg text-transparent caret-black"
       />
+      <div className="absolute top-0 p-[13px] text-lg z-10 text-black">
+        {highlight(inputValue)}
+      </div>
       {showRule15 && (
         <div className="mt-3 flex">
           <input
@@ -505,8 +542,8 @@ export default function Home() {
         <div key={rule.name}>
           {Object.values(warnings).slice(0, rules.length - index).every(warning => !warning) ? (
             <>
-              <p className="text-green-500 mt-2">{rule.fulfilledMessage}</p>
-              <p className="text-green-500 mt-2">{rule.message}</p>
+              <p className="text-green-500 mt-3">{rule.fulfilledMessage}</p>
+              <p className="text-green-500 mt-3">{rule.message}</p>
               {rule.images && rule.images.length > 0 && (
                 <div className="flex flex-row items-start">
                   {rule.images.map((img, imgIndex) => (
@@ -525,8 +562,8 @@ export default function Home() {
             <>
               {index === rules.length - 1 || Object.values(warnings).slice(0, rules.length - index - 1).every(warning => !warning) ? (
                 <>
-                  <p className="text-red-500 mt-2">{rule.unfulfilledMessage}</p>
-                  <p className="text-red-500 mt-2">{rule.message}</p>
+                  <p className="text-red-500 mt-16">{rule.unfulfilledMessage}</p>
+                  <p className="text-red-500 mt-3">{rule.message}</p>
                   {rule.images && rule.images.length > 0 && (
                     <div className="flex flex-row items-start">
                       {rule.images.map((img, imgIndex) => (
