@@ -142,16 +142,37 @@ export default function Home() {
   };
 
   const highlight = (text) => {
-    return text.split('').map((char, index) => {
-      if (/\d/.test(char)) {
-        return (
-          <span key={index} className="bg-red-500 z-10">
-            {char}
-          </span>
-        );
-      }
-      return char;
-    });
+    if (currentRule === 5 || currentRule === 19) {
+      return text.split('').map((char, index) => {
+        if (/\d/.test(char)) {
+          return (
+            <span key={index} className="bg-red-500">
+              {char}
+            </span>
+          );
+        }
+        return char;
+      });
+    }
+    else if (currentRule === 9) {
+      return text.split('').map((char, index) => {
+        if (/[IVXLCDM]+/g.test(char)) {
+          return (
+            <span key={index} className="bg-red-500">
+              {char}
+            </span>
+          );
+        }
+        return char;
+      });
+    }
+    else {
+      return (
+        <span>
+          {text}
+        </span>
+      );
+    }
   };
 
   useEffect(() => {
