@@ -537,7 +537,7 @@ export default function Home() {
         placeholder="Type a word..."
         className="absolute top-0 w-full p-3 text-lg border border-gray-300 rounded-lg text-transparent caret-black"
       />
-      <div className="absolute top-0 p-[13px] text-lg z-10 text-black">
+      <div className="absolute top-0 w-full p-[13px] text-lg z-10 text-black pointer-events-none">
         {highlight(inputValue)}
       </div>
       {showRule15 && (
