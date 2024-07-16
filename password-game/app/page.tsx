@@ -28,7 +28,6 @@ export default function Home() {
     }
     console.log("current length: ", inputValue.length);
     console.log("current rule: ", currentRule);
-    console.log("kebakar: ", burn);
   };
 
   const [currentRule, setCurrentRule] = useState(1);
@@ -367,14 +366,20 @@ export default function Home() {
           break;
         }
         case 5: {
-          let target = 30 - calcDigitSum(inputValue);
+          let temp = inputValue;
+          let target = 30 - calcDigitSum(temp);
+          while (target < 0) {
+            const idx = temp.search(/\d/);
+            temp = temp.slice(0, idx) + temp.slice(idx + 1);
+            target = 30 - calcDigitSum(temp);
+          }
           let remaining = 0;
-          while (target > 10) {
+          while (target >= 10) {
             target -= 9;
             remaining += 1;
           }
-          setInputValue(inputValue.replace('cheat', '') + '9'.repeat(remaining) + target);
-          break;
+          setInputValue(temp.replace('cheat', '') + '9'.repeat(remaining) + target);
+          break;        
         }
         case 6: {
           const months = [
@@ -403,9 +408,16 @@ export default function Home() {
           burnCheat = true;
           break;
         }
-        case 11: {}
-        case 12: {}
-        case 13: {}
+        case 11: {        
+          // harusnya gaada cheatnya
+        }
+        case 12: {
+          setInputValue(inputValue.replace('cheat', '') + captchas);
+          break;
+        }
+        case 13: {
+          
+        }
         case 14: {}
         case 15: {}
         case 16: {}
@@ -422,7 +434,6 @@ export default function Home() {
     const interval = setInterval(() => {
       setInputValue(prev => {
         if (burn) {
-          console.log("masuk");
           for (let i = 0; i < prev.length - 1; i++) {
             if (String.fromCharCode(...[prev[i].charCodeAt(0), prev[i+1].charCodeAt(0)]) === fireEmoji) {
               return prev.slice(0, i-1) + prev.slice(i) + fireEmoji;
@@ -430,12 +441,9 @@ export default function Home() {
           }
           return prev.slice(0, -1) + fireEmoji;
         }
-        if (!burn) {
-          console.log("anjay");
-        }
         return prev;
       });
-    }, 1000);
+    }, 10000);
     return () => clearInterval(interval);
   }, []);
 
