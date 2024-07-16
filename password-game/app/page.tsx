@@ -3,6 +3,8 @@
 import handler from '@/pages/api/captcha';
 import { log, warn } from 'console';
 import { ClientPageRoot } from 'next/dist/client/components/client-page';
+import { Special_Elite } from 'next/font/google';
+import { spec } from 'node:test/reporters';
 import { useState, useEffect, useRef } from 'react';
 
 let fetchedCountry: { answer: string; image: string }[] | null = null;
@@ -55,10 +57,6 @@ export default function Home() {
   const [captchas, setCaptchas] = useState<string[]>([]);
   const [countryImage, setCountryImage] = useState<{ answer: string; image: string }[]>([]);
   const [captchaImage, setCaptchaImages] = useState<{ answer: string; image: string }[]>([]);
-  const [showCountry, setShowCountry] = useState(false);
-  const [showCaptcha, setShowCaptcha] = useState(false);
-  const [originalValues, setOriginalValues] = useState([]);
-  const intervalRef = useRef(null);
   const fireEmoji = String.fromCharCode(...[55357, 56613]);
   const fireEmojiPattern = new RegExp(fireEmoji, 'g');
   const caterpillarEmoji = String.fromCharCode(...[55357, 56347]);
@@ -71,11 +69,15 @@ export default function Home() {
   const [restrictedChars, setRestrictedChars] = useState([]);
   const [showRule15, setShowRule15] = useState(false);
 
-  const checkSpecialCharacter = (inputValue: string) => /[!@#$%^&*(),.?":{}|<>]/.test(inputValue);
-  const checkDigitSum = (inputValue: string, sum: number) => {
+  const calcDigitSum = (inputValue: string) => {
     const digits = inputValue.match(/\d/g);
     const digitSum = digits ? digits.reduce((acc, digit) => acc + parseInt(digit), 0) : 0;
     console.log("current sum: ", digitSum);
+    return digitSum;
+  }
+
+  const checkDigitSum = (inputValue: string, sum: number) => {
+    let digitSum = calcDigitSum(inputValue);
     return digitSum === sum;
   };
   const checkMonth = (inputValue: string) => {
@@ -85,7 +87,6 @@ export default function Home() {
     ];
     return new RegExp(months.join("|"), "i").test(inputValue);
   };
-  const checkRomanNumeral = (inputValue: string) => /[IVXLCDM]/.test(inputValue);
 
   const romanToInt = (s: string): number => {
     const romanMap: { [key: string]: number } = {
@@ -229,6 +230,9 @@ export default function Home() {
       time: false,
     };
 
+    if (newWarnings.length) {
+      setCurrentRule(1);
+    }
     if (!newWarnings.length) {
       setCurrentRule(2);
       newWarnings.number = !/\d/.test(inputValue);
@@ -239,7 +243,7 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase) {
       setCurrentRule(4);
-      newWarnings.specialCharacter = !checkSpecialCharacter(inputValue);
+      newWarnings.specialCharacter = !/[!@#$%^&*(),.?":{}|<>]/.test(inputValue);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter) {
       setCurrentRule(5);
@@ -251,7 +255,7 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month) {
       setCurrentRule(7);
-      newWarnings.romanNumeral = !checkRomanNumeral(inputValue);
+      newWarnings.romanNumeral = !/[IVXLCDM]/.test(inputValue);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral) {
       setCurrentRule(8);
@@ -324,20 +328,70 @@ export default function Home() {
       setCurrentRule(20);
       newWarnings.time = !inputValue.includes(getCurrentTime());
     }
-
     setWarnings(newWarnings);
 
-    if (Object.values(newWarnings).slice(0, 7).every(warning => !warning)) {
-      setShowCountry(true);
-    } else {
-      setShowCountry(false);
+    const cheatIndex = inputValue.indexOf('cheat');
+
+    if (cheatIndex !== -1) {
+      switch (currentRule) {
+        case 1: {
+          const remainingLength = 7 - inputValue.length + 5;
+          setInputValue(inputValue.replace('cheat', '') + 'a'.repeat(remainingLength));
+          break;
+        }
+        case 2: {
+          setInputValue(inputValue.replace('cheat', '') + String.fromCharCode(49 + Math.floor(Math.random() * 9)));
+          break;
+        }
+        case 3: {
+          let temp = inputValue.replace('cheat', '');
+          if (!/[a-zA-Z]/.test(temp)) {
+            temp += String.fromCharCode(65 + Math.floor(Math.random() * 26));
+          }
+          else {
+            for (let i = 0; i < temp.length; i++) {
+              if (temp[i] >= 'a' && temp[i] <= 'z') {
+                temp = temp.slice(0, i) + temp[i].toUpperCase() + temp.slice(i + 1);
+                break;
+              }
+            }
+          }
+          setInputValue(temp);
+          break;
+        }
+        case 4: {
+          const specialChars = '!@#$%^&*(),.?":{}|<>';
+          setInputValue(inputValue.replace('cheat', '') +  specialChars[Math.floor(Math.random() * specialChars.length)])
+          break;
+        }
+        case 5: {
+          let target = 50 - calcDigitSum(inputValue);
+          let remaining = 0;
+          while (target > 10) {
+            target -= 9;
+            remaining += 1;
+          }
+          setInputValue(inputValue.replace('cheat', '') + '9'.repeat(remaining) + target);
+          break;
+        }
+        case 6: {}
+        case 7: {}
+        case 8: {}
+        case 9: {}
+        case 10: {}
+        case 11: {}
+        case 12: {}
+        case 13: {}
+        case 14: {}
+        case 15: {}
+        case 16: {}
+        case 17: {}
+        case 18: {}
+        case 19: {}
+        case 20: {}
+      }
     }
 
-    if (Object.values(newWarnings).slice(0, 7).every(warning => !warning)) {
-      setShowCaptcha(true);
-    } else {
-      setShowCaptcha(false);
-    }
   }, [inputValue, countries]);
 
   useEffect(() => {
