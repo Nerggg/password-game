@@ -120,6 +120,7 @@ export default function Home() {
 
   const checkLeapYear = (inputValue: string) => {
     const years = inputValue.match(/\d+/g)?.map(Number) || [];
+    console.log(years);
     for (const year of years) {
       if ((year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0)) {
         return true;
@@ -416,9 +417,21 @@ export default function Home() {
           break;
         }
         case 13: {
-          
+          const startYear = 1900;
+          const endYear = 2100;
+          let year;
+          do {
+            year = Math.floor(Math.random() * (endYear - startYear + 1)) + startYear;
+          } while (!(year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)));        
+          setInputValue(inputValue.replace('cheat', '') + year);
+          break;
         }
-        case 14: {}
+        case 14: {
+          setInputValue(inputValue.replace('cheat', '').replace(caterpillarPattern, ''));
+          newWarnings.chicken = false;
+          paulChicken = false;
+          break;
+        }
         case 15: {}
         case 16: {}
         case 17: {}
@@ -450,6 +463,7 @@ export default function Home() {
   useEffect(() => {
     const interval = setInterval(() => {
       setInputValue(prevValue => {
+        console.log("makan")
         if (paulChicken) {
           let newValue = prevValue;
           for (let i = 0; i < 3; i++) {
