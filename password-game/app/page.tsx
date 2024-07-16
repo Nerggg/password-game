@@ -10,6 +10,7 @@ import { useState, useEffect, useRef } from 'react';
 let fetchedCountry: { answer: string; image: string }[] | null = null;
 let fetchedCaptcha: { answer: string; image: string }[] | null = null;
 let burn = false;
+let burnCheat = false;
 let paulEgg = false;
 let paulChicken = false;
 
@@ -27,6 +28,7 @@ export default function Home() {
     }
     console.log("current length: ", inputValue.length);
     console.log("current rule: ", currentRule);
+    console.log("kebakar: ", burn);
   };
 
   const [currentRule, setCurrentRule] = useState(1);
@@ -247,7 +249,7 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter) {
       setCurrentRule(5);
-      newWarnings.digitSum = !checkDigitSum(inputValue, 50);
+      newWarnings.digitSum = !checkDigitSum(inputValue, 30);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum) {
       setCurrentRule(6);
@@ -268,7 +270,7 @@ export default function Home() {
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct) {
       setCurrentRule(10);
       newWarnings.fire = fireEmojiPattern.test(inputValue);
-      if (!burn) {
+      if (!burn && !burnCheat) {
         setInputValue(prev => prev + '🔥');
         burn = true;
       }
@@ -365,7 +367,7 @@ export default function Home() {
           break;
         }
         case 5: {
-          let target = 50 - calcDigitSum(inputValue);
+          let target = 30 - calcDigitSum(inputValue);
           let remaining = 0;
           while (target > 10) {
             target -= 9;
@@ -374,11 +376,33 @@ export default function Home() {
           setInputValue(inputValue.replace('cheat', '') + '9'.repeat(remaining) + target);
           break;
         }
-        case 6: {}
-        case 7: {}
-        case 8: {}
-        case 9: {}
-        case 10: {}
+        case 6: {
+          const months = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+          ];
+          setInputValue(inputValue.replace('cheat', '') +  months[Math.floor(Math.random() * months.length)].toLowerCase());
+          break;
+        }
+        case 7: {
+          const roman = 'IVXLCDM';
+          setInputValue(inputValue.replace('cheat', '') +  roman[Math.floor(Math.random() * roman.length)])
+          break;
+        }
+        case 8: {
+          setInputValue(inputValue.replace('cheat', '') +  countries[Math.floor(Math.random() * countries.length)])
+          break;
+        }
+        case 9: {
+          setInputValue(inputValue.replace('cheat', '').replace(/[IVXLCDM]/g, '') + 'XXIV');
+          break;
+        }
+        case 10: {
+          setInputValue(inputValue.replace('cheat', '').replace(fireEmojiPattern, ''));
+          burn = false;
+          burnCheat = true;
+          break;
+        }
         case 11: {}
         case 12: {}
         case 13: {}
@@ -398,6 +422,7 @@ export default function Home() {
     const interval = setInterval(() => {
       setInputValue(prev => {
         if (burn) {
+          console.log("masuk");
           for (let i = 0; i < prev.length - 1; i++) {
             if (String.fromCharCode(...[prev[i].charCodeAt(0), prev[i+1].charCodeAt(0)]) === fireEmoji) {
               return prev.slice(0, i-1) + prev.slice(i) + fireEmoji;
@@ -405,9 +430,12 @@ export default function Home() {
           }
           return prev.slice(0, -1) + fireEmoji;
         }
+        if (!burn) {
+          console.log("anjay");
+        }
         return prev;
       });
-    }, 10000);
+    }, 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -470,7 +498,7 @@ export default function Home() {
     },
     {
       name: 'digitSum',
-      message: 'The digits in your password must add up to 50.',
+      message: 'The digits in your password must add up to 30.',
       fulfilledMessage: 'Rule 5 fulfilled',
       unfulfilledMessage: 'Rule 5 not fulfilled',
       images: null,
@@ -630,7 +658,7 @@ export default function Home() {
                     <div key={imgIndex} className="flex flex-col items-center p-4 rounded shadow">
                       <img
                         src={`data:image/png;base64,${img.image}`}
-                        alt="country"
+                        alt="image"
                         className="w-40 h-auto"
                       />
                     </div>
@@ -650,7 +678,7 @@ export default function Home() {
                         <div key={imgIndex} className="flex flex-col items-center p-4 rounded shadow">
                           <img
                             src={`data:image/png;base64,${img.image}`}
-                            alt="country"
+                            alt="image"
                             className="w-40 h-auto"
                           />
                         </div>
