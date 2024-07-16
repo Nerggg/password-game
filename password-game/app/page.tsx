@@ -535,10 +535,15 @@ export default function Home() {
         value={inputValue}
         onChange={handleInputValue}
         placeholder="Type a word..."
+        maxLength={144}
         className="absolute top-0 w-full p-3 text-lg border border-gray-300 rounded-lg text-transparent caret-black"
       />
       <div className="absolute top-0 w-full p-[13px] text-lg z-10 text-black pointer-events-none">
         {highlight(inputValue)}
+      </div>
+      <div className='mt-16'>
+        <div className='text-white'>Current Length: {inputValue.length}</div>
+        {inputValue.length === 144 && (<div className=''>Maximum length reached!</div>)}
       </div>
       {showRule15 && (
         <div className="mt-3 flex">
@@ -583,7 +588,7 @@ export default function Home() {
             <>
               {index === rules.length - 1 || Object.values(warnings).slice(0, rules.length - index - 1).every(warning => !warning) ? (
                 <>
-                  <p className="text-red-500 mt-16">{rule.unfulfilledMessage}</p>
+                  <p className="text-red-500 mt-3">{rule.unfulfilledMessage}</p>
                   <p className="text-red-500 mt-3">{rule.message}</p>
                   {rule.images && rule.images.length > 0 && (
                     <div className="flex flex-row items-start">
