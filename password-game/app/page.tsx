@@ -2,6 +2,7 @@
 // 11111111113111111111aaaaAugust@IVbrailVI🐔🐛🐛🐛🐛🐛🐛I want IRKjapan71
 import handler from '@/pages/api/captcha';
 import { log, warn } from 'console';
+import next from 'next';
 import { ClientPageRoot } from 'next/dist/client/components/client-page';
 import { Special_Elite } from 'next/font/google';
 import { spec } from 'node:test/reporters';
@@ -143,6 +144,13 @@ export default function Home() {
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     return `${hours}:${minutes}`;
+  };
+
+  const nextPrime = (num) => {
+    while (!isPrime(num)) {
+      num++;
+    }
+    return num;
   };
 
   const highlight = (text) => {
@@ -298,7 +306,7 @@ export default function Home() {
       if (!paulChicken && !fireEmojiPattern.test(inputValue) && newWarnings.chicken && !chickenCheat) {
         paulChicken = true;
         setInputValue(inputValue.replace(/🥚/g, chickenEmoji));
-        setInputValue(prev => prev + '🐛🐛🐛🐛🐛🐛')
+        // setInputValue(prev => prev + '🐛🐛🐛🐛🐛🐛')
       }
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken) {
@@ -318,8 +326,6 @@ export default function Home() {
       setCurrentRule(17);
       const digitCount = (inputValue.match(/\d/g) || []).length;
       const percentage = (digitCount / inputValue.length) * 100;
-      console.log("persennya ", percentage);
-      console.log("jlh angkanya ", digitCount);
       newWarnings.digits = !(percentage >= 30);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken && !newWarnings.sacrifice && !newWarnings.words && !newWarnings.digits) {
@@ -420,7 +426,7 @@ export default function Home() {
           let temp = inputValue;
           let target = 40 - calcDigitSum(temp) - calcDigitSum(captchas[0]);
           while (target < 0) {
-            const idx = temp.search(/\d/);
+            let idx = temp.search(/\d/);
             temp = temp.slice(0, idx) + temp.slice(idx + 1);
             target = 40 - calcDigitSum(temp) - calcDigitSum(captchas[0]);
           }
@@ -488,27 +494,60 @@ export default function Home() {
           const num = Math.ceil(((inputValue.length - 5) * 0.3 - digitCount)/(0.7));
           setInputValue(inputValue.replace('cheat', '') + '0'.repeat(num));
           break;
-          //
         }
         case 18: {
-          let Lengthtarget = inputValue.length >= 100 ? inputValue.length + 3 : inputValue.length + 2;
           let temp = inputValue.replace('cheat', '');
+          let Lengthtarget = temp.length >= 100 ? temp.length + 3 : temp.length + 2;
           let target = 40 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
+          let correction = 0;
           while (target < 0) {
-            const idx = temp.search(/\d/);
+            let idx = temp.search(/\d/);
+            if (idx === 0) {
+              idx = temp.slice(1).search(/\d/) + 1;
+              console.log("idx nya ", idx);
+            }
             temp = temp.slice(0, idx) + temp.slice(idx + 1);
             target = 40 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
+            correction++;
+          }
+          let remaining = 0;
+          // target = target + 1 - correction;
+          while (target >= 10) {
+            target -= 9;
+            remaining += 1;
+          }
+          setInputValue(temp + '9'.repeat(remaining) + target + (Lengthtarget + (correction - 1)));
+          break;      
+        }
+        case 19: {
+          let temp = inputValue.replace('cheat', '');
+          let remainingPrime = nextPrime(temp.length) - temp.length;
+          let Lengthtarget = temp.length >= 100 ? temp.length + 3 : temp.length + 2;
+          let target = 40 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
+          let correction = 0;
+          while (target < 0) {
+            let idx = temp.search(/\d/);
+            if (idx === 0) {
+              idx = temp.slice(1).search(/\d/) + 1;
+              console.log("idx nya ", idx);
+            }
+            temp = temp.slice(0, idx) + temp.slice(idx + 1);
+            target = 40 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
+            correction++;
           }
           let remaining = 0;
           while (target >= 10) {
             target -= 9;
             remaining += 1;
           }
-          setInputValue(temp + '9'.repeat(remaining) + target + Lengthtarget);
-          break;      
+          setInputValue(temp + '9'.repeat(remaining) + target + (Lengthtarget + (correction - 1)) + '0'.repeat(remainingPrime));
+          break;
         }
-        case 19: {}
-        case 20: {}
+        case 20: {
+          let temp = inputValue.replace('cheat', '');
+          
+          setInputValue(inputValue.replace('cheat', '') + getCurrentTime());
+        }
       }
     }
 
