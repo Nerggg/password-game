@@ -319,6 +319,7 @@ export default function Home() {
       const digitCount = (inputValue.match(/\d/g) || []).length;
       const percentage = (digitCount / inputValue.length) * 100;
       console.log("persennya ", percentage);
+      console.log("jlh angkanya ", digitCount);
       newWarnings.digits = !(percentage >= 30);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken && !newWarnings.sacrifice && !newWarnings.words && !newWarnings.digits) {
@@ -484,7 +485,9 @@ export default function Home() {
         }
         case 17: {
           const digitCount = (inputValue.match(/\d/g) || []).length;
-          const percentage = (digitCount / inputValue.length) * 100;
+          const num = Math.ceil(((inputValue.length - 5) * 0.3 - digitCount)/(0.7));
+          setInputValue(inputValue.replace('cheat', '') + '0'.repeat(num));
+          break;
         }
         case 18: {}
         case 19: {}
