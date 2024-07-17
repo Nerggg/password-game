@@ -250,7 +250,7 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter) {
       setCurrentRule(5);
-      newWarnings.digitSum = !checkDigitSum(inputValue, 30);
+      newWarnings.digitSum = !checkDigitSum(inputValue, 40);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum) {
       setCurrentRule(6);
@@ -372,11 +372,11 @@ export default function Home() {
         }
         case 5: {
           let temp = inputValue;
-          let target = 30 - calcDigitSum(temp);
+          let target = 40 - calcDigitSum(temp);
           while (target < 0) {
             const idx = temp.search(/\d/);
             temp = temp.slice(0, idx) + temp.slice(idx + 1);
-            target = 30 - calcDigitSum(temp);
+            target = 40 - calcDigitSum(temp);
           }
           let remaining = 0;
           while (target >= 10) {
@@ -418,11 +418,11 @@ export default function Home() {
         }
         case 12: {
           let temp = inputValue;
-          let target = 30 - calcDigitSum(temp) - calcDigitSum(captchas[0]);
+          let target = 40 - calcDigitSum(temp) - calcDigitSum(captchas[0]);
           while (target < 0) {
             const idx = temp.search(/\d/);
             temp = temp.slice(0, idx) + temp.slice(idx + 1);
-            target = 30 - calcDigitSum(temp) - calcDigitSum(captchas[0]);
+            target = 40 - calcDigitSum(temp) - calcDigitSum(captchas[0]);
           }
           let remaining = 0;
           while (target >= 10) {
@@ -438,19 +438,19 @@ export default function Home() {
           break;        
         }
         case 13: {
-          const startYear = 1900;
-          const endYear = 2200;
+          const startYear = 1;
+          const endYear = 9;
           let year;
           do {
             year = Math.floor(Math.random() * (endYear - startYear + 1)) + startYear;
           } while (!(year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)));
 
           let temp = inputValue;
-          let target = 30 - calcDigitSum(temp) - calcDigitSum(String(year));
+          let target = 40 - calcDigitSum(temp) - calcDigitSum(String(year));
           while (target < 0) {
             const idx = temp.search(/\d/);
             temp = temp.slice(0, idx) + temp.slice(idx + 1);
-            target = 30 - calcDigitSum(temp) - calcDigitSum(String(year));
+            target = 40 - calcDigitSum(temp) - calcDigitSum(String(year));
           }
           let remaining = 0;
           while (target >= 10) {
@@ -458,10 +458,10 @@ export default function Home() {
             remaining += 1;
           }
           if (target === 0) {
-            setInputValue(temp.replace('cheat', '') + '9'.repeat(remaining) + year);
+            setInputValue(year + temp.replace('cheat', '') + '9'.repeat(remaining));
           }
           else {
-            setInputValue(temp.replace('cheat', '') + '9'.repeat(remaining) + target + year);
+            setInputValue(year + temp.replace('cheat', '') + '9'.repeat(remaining) + target);
           }
           break;    
         }
@@ -489,7 +489,23 @@ export default function Home() {
           setInputValue(inputValue.replace('cheat', '') + '0'.repeat(num));
           break;
         }
-        case 18: {}
+        case 18: {
+          let Lengthtarget = inputValue.length >= 100 ? inputValue.length + 3 : inputValue.length + 2;
+          let temp = inputValue.replace('cheat', '');
+          let target = 40 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
+          while (target < 0) {
+            const idx = temp.search(/\d/);
+            temp = temp.slice(0, idx) + temp.slice(idx + 1);
+            target = 40 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
+          }
+          let remaining = 0;
+          while (target >= 10) {
+            target -= 9;
+            remaining += 1;
+          }
+          setInputValue(temp + '9'.repeat(remaining) + target + Lengthtarget);
+          break;      
+        }
         case 19: {}
         case 20: {}
       }
@@ -573,7 +589,7 @@ export default function Home() {
     },
     {
       name: 'digitSum',
-      message: 'The digits in your password must add up to 30.',
+      message: 'The digits in your password must add up to 40.',
       fulfilledMessage: 'Rule 5 fulfilled',
       unfulfilledMessage: 'Rule 5 not fulfilled',
       images: null,
