@@ -488,6 +488,7 @@ export default function Home() {
           const num = Math.ceil(((inputValue.length - 5) * 0.3 - digitCount)/(0.7));
           setInputValue(inputValue.replace('cheat', '') + '0'.repeat(num));
           break;
+          //
         }
         case 18: {
           let Lengthtarget = inputValue.length >= 100 ? inputValue.length + 3 : inputValue.length + 2;
