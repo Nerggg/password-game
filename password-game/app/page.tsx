@@ -13,6 +13,8 @@ let burn = false;
 let burnCheat = false;
 let paulEgg = false;
 let paulChicken = false;
+let chickenCheat = false;
+let sacrificeCheat = false;
 
 export default function Home() {
   const handleInputValue = (e) => {
@@ -120,7 +122,6 @@ export default function Home() {
 
   const checkLeapYear = (inputValue: string) => {
     const years = inputValue.match(/\d+/g)?.map(Number) || [];
-    console.log(years);
     for (const year of years) {
       if ((year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0)) {
         return true;
@@ -269,7 +270,7 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct) {
       setCurrentRule(10);
-      newWarnings.fire = fireEmojiPattern.test(inputValue);
+      newWarnings.fire = burnCheat ? false : fireEmojiPattern.test(inputValue);
       if (!burn && !burnCheat) {
         setInputValue(prev => prev + '🔥');
         burn = true;
@@ -294,7 +295,7 @@ export default function Home() {
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear) {
       setCurrentRule(14);
       newWarnings.chicken = !caterpillarPattern.test(inputValue);
-      if (!paulChicken && !fireEmojiPattern.test(inputValue) && newWarnings.chicken) {
+      if (!paulChicken && !fireEmojiPattern.test(inputValue) && newWarnings.chicken && !chickenCheat) {
         paulChicken = true;
         setInputValue(inputValue.replace(/🥚/g, chickenEmoji));
         setInputValue(prev => prev + '🐛🐛🐛🐛🐛🐛')
@@ -302,10 +303,11 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken) {
       setCurrentRule(15);
-      if (restrictedChars.length === 0) {
+      if (restrictedChars.length === 0 && !sacrificeCheat) {
         setShowRule15(true);
       }
-      newWarnings.sacrifice = (restrictedChars.length === 0);
+
+      newWarnings.sacrifice = sacrificeCheat ? false : restrictedChars.length === 0;
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken && !newWarnings.sacrifice) {
       setCurrentRule(16);
@@ -316,6 +318,7 @@ export default function Home() {
       setCurrentRule(17);
       const digitCount = (inputValue.match(/\d/g) || []).length;
       const percentage = (digitCount / inputValue.length) * 100;
+      console.log("persennya ", percentage);
       newWarnings.digits = !(percentage >= 30);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken && !newWarnings.sacrifice && !newWarnings.words && !newWarnings.digits) {
@@ -413,28 +416,76 @@ export default function Home() {
           // harusnya gaada cheatnya
         }
         case 12: {
-          setInputValue(inputValue.replace('cheat', '') + captchas);
-          break;
+          let temp = inputValue;
+          let target = 30 - calcDigitSum(temp) - calcDigitSum(captchas[0]);
+          while (target < 0) {
+            const idx = temp.search(/\d/);
+            temp = temp.slice(0, idx) + temp.slice(idx + 1);
+            target = 30 - calcDigitSum(temp) - calcDigitSum(captchas[0]);
+          }
+          let remaining = 0;
+          while (target >= 10) {
+            target -= 9;
+            remaining += 1;
+          }
+          if (target === 0) {
+            setInputValue(temp.replace('cheat', '') + '9'.repeat(remaining) + captchas[0]);
+          }
+          else {          
+            setInputValue(temp.replace('cheat', '') + '9'.repeat(remaining) + target + captchas[0]);
+          }
+          break;        
         }
         case 13: {
           const startYear = 1900;
-          const endYear = 2100;
+          const endYear = 2200;
           let year;
           do {
             year = Math.floor(Math.random() * (endYear - startYear + 1)) + startYear;
-          } while (!(year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)));        
-          setInputValue(inputValue.replace('cheat', '') + year);
-          break;
+          } while (!(year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)));
+
+          let temp = inputValue;
+          let target = 30 - calcDigitSum(temp) - calcDigitSum(String(year));
+          while (target < 0) {
+            const idx = temp.search(/\d/);
+            temp = temp.slice(0, idx) + temp.slice(idx + 1);
+            target = 30 - calcDigitSum(temp) - calcDigitSum(String(year));
+          }
+          let remaining = 0;
+          while (target >= 10) {
+            target -= 9;
+            remaining += 1;
+          }
+          if (target === 0) {
+            setInputValue(temp.replace('cheat', '') + '9'.repeat(remaining) + year);
+          }
+          else {
+            setInputValue(temp.replace('cheat', '') + '9'.repeat(remaining) + target + year);
+          }
+          break;    
         }
         case 14: {
-          setInputValue(inputValue.replace('cheat', '').replace(caterpillarPattern, ''));
+          setInputValue(inputValue.replace('cheat', '').replace(caterpillarPattern, '') + caterpillarEmoji);
           newWarnings.chicken = false;
           paulChicken = false;
+          chickenCheat = true;
           break;
         }
-        case 15: {}
-        case 16: {}
-        case 17: {}
+        case 15: {
+          setInputValue(inputValue.replace('cheat', ''));
+          sacrificeCheat = true;
+          setShowRule15(false);
+          break;
+        }
+        case 16: {
+          const validPhrases = ["I want IRK", "I need IRK", "I love IRK"];
+          setInputValue(inputValue.replace('cheat', '') +  validPhrases[Math.floor(Math.random() * validPhrases.length)]);
+          break;
+        }
+        case 17: {
+          const digitCount = (inputValue.match(/\d/g) || []).length;
+          const percentage = (digitCount / inputValue.length) * 100;
+        }
         case 18: {}
         case 19: {}
         case 20: {}
@@ -463,7 +514,6 @@ export default function Home() {
   useEffect(() => {
     const interval = setInterval(() => {
       setInputValue(prevValue => {
-        console.log("makan")
         if (paulChicken) {
           let newValue = prevValue;
           for (let i = 0; i < 3; i++) {
@@ -640,9 +690,9 @@ export default function Home() {
         onChange={handleInputValue}
         placeholder="Type a word..."
         maxLength={144}
-        className="absolute top-0 w-full p-3 text-lg border border-gray-300 rounded-lg text-transparent caret-black"
+        className="absolute top-0 w-full p-3 text-md border border-gray-300 rounded-lg text-transparent caret-black"
       />
-      <div className="absolute top-0 w-full p-[13px] text-lg z-10 text-black pointer-events-none">
+      <div className="absolute top-0 w-full p-[13px] text-md z-10 text-black pointer-events-none">
         {highlight(inputValue)}
       </div>
       <div className='mt-16'>
@@ -656,7 +706,7 @@ export default function Home() {
             value={rule15InputValue}
             onChange={handleRule15InputChange}
             placeholder="Type 2 chars..."
-            className="w-1/3 p-3 text-lg border border-gray-300 rounded-lg text-black"
+            className="w-1/3 p-3 text-md border border-gray-300 rounded-lg text-black"
           />
           {rule15InputValue.length == 2 && (
           <button
@@ -672,8 +722,8 @@ export default function Home() {
         <div key={rule.name}>
           {Object.values(warnings).slice(0, rules.length - index).every(warning => !warning) ? (
             <>
-              <p className="text-green-500 mt-3">{rule.fulfilledMessage}</p>
-              <p className="text-green-500 mt-3">{rule.message}</p>
+              <p className="text-green-500 mt-3 text-md">{rule.fulfilledMessage}</p>
+              <p className="text-green-500 mt-3 text-md">{rule.message}</p>
               {rule.images && rule.images.length > 0 && (
                 <div className="flex flex-row items-start">
                   {rule.images.map((img, imgIndex) => (
@@ -692,8 +742,8 @@ export default function Home() {
             <>
               {index === rules.length - 1 || Object.values(warnings).slice(0, rules.length - index - 1).every(warning => !warning) ? (
                 <>
-                  <p className="text-red-500 mt-3">{rule.unfulfilledMessage}</p>
-                  <p className="text-red-500 mt-3">{rule.message}</p>
+                  <p className="text-red-500 mt-3 text-md">{rule.unfulfilledMessage}</p>
+                  <p className="text-red-500 mt-3 text-md">{rule.message}</p>
                   {rule.images && rule.images.length > 0 && (
                     <div className="flex flex-row items-start">
                       {rule.images.map((img, imgIndex) => (
