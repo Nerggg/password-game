@@ -504,19 +504,18 @@ export default function Home() {
             let idx = temp.search(/\d/);
             if (idx === 0) {
               idx = temp.slice(1).search(/\d/) + 1;
-              console.log("idx nya ", idx);
             }
             temp = temp.slice(0, idx) + temp.slice(idx + 1);
             target = 40 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
             correction++;
           }
           let remaining = 0;
-          // target = target + 1 - correction;
           while (target >= 10) {
             target -= 9;
             remaining += 1;
+            correction--;
           }
-          setInputValue(temp + '9'.repeat(remaining) + target + (Lengthtarget + (correction - 1)));
+          setInputValue(temp + '9'.repeat(remaining) + (target + correction - 1) + (Lengthtarget - (correction - 1)));
           break;      
         }
         case 19: {
