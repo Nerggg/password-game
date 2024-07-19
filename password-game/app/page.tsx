@@ -11,7 +11,6 @@ import { useState, useEffect, useRef } from 'react';
 
 let fetchedCountry: { answer: string; image: string }[] | null = null;
 let fetchedCaptcha: { answer: string; image: string }[] | null = null;
-let firstBurn = true;
 let burn = false;
 let burnCheat = false;
 let paulEgg = false;
@@ -31,8 +30,8 @@ export default function Home() {
     else {
       setInputValue(e.target.value);
     }
-    console.log("current length: ", inputValue.length);
-    console.log("current rule: ", currentRule);
+    // console.log("current length: ", inputValue.length);
+    // console.log("current rule: ", currentRule);
   };
 
   const [currentRule, setCurrentRule] = useState(1);
@@ -79,7 +78,7 @@ export default function Home() {
   const calcDigitSum = (inputValue: string) => {
     const digits = inputValue.match(/\d/g);
     const digitSum = digits ? digits.reduce((acc, digit) => acc + parseInt(digit), 0) : 0;
-    console.log("current sum: ", digitSum);
+    // console.log("current sum: ", digitSum);
     return digitSum;
   }
 
@@ -277,48 +276,16 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct) {
       setCurrentRule(10);
-      if (!burn) {
+      if (!burn && !burnCheat) {
         newWarnings.fire = true;
         setInputValue(prev => prev + fireEmoji);
         burn = true;
       }
       newWarnings.fire = burnCheat ? false : fireEmojiPattern.test(inputValue);
-      // if (!burn && !burnCheat) {
-      //   setInputValue(inputValue + fireEmoji);
-      //   burn = true;
-      // }
-      // if (firstBurn && !inputValue.includes(fireEmoji)) {
-      //   firstBurn = false;
-      //   console.log("jayna")
-      //   console.log("jayna")
-      //   console.log("jayna")
-      //   console.log("jayna")
-      // }
-      // if (burn && firstBurn && !inputValue.includes(fireEmoji)) {
-      //   console.log("langsong")
-      //   console.log("langsong")
-      //   console.log("langsong")
-      //   console.log(inputValue.includes(fireEmoji))
-      //   console.log(fireEmoji)
-      //   setInputValue(inputValue + '🥚');
-      //   paulEgg = true;
-      //   firstBurn = false;
-      // }
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire) {
       setCurrentRule(11);
       newWarnings.egg = !/[🥚🐔]/.test(inputValue);
-      // if (!paulEgg) {
-      //   setInputValue(inputValue + '🥚');
-      //   paulEgg = true;
-      //   console.log("anjay")
-      //   console.log("anjay")
-      //   console.log("anjay")
-      //   console.log("anjay")
-      // }
-      // if (/[🥚🐔]/.test(inputValue)) {
-      //   setIsGameOver(true);
-      // }
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg) {
       setCurrentRule(12);
@@ -442,7 +409,7 @@ export default function Home() {
           break;
         }
         case 10: {
-          setInputValue(inputValue.replace('cheat', '').replace(fireEmojiPattern, ''));
+          setInputValue(inputValue.replace('cheat', '').replace(fireEmoji, ''));
           burn = false;
           burnCheat = true;
           break;
