@@ -1,5 +1,5 @@
 'use client';
-// 11111111113111111111aaaaAugust@IVbrailVI🐔🐛🐛🐛🐛🐛🐛I want IRKjapan71
+
 import handler from '@/pages/api/captcha';
 import { log, warn } from 'console';
 import next from 'next';
@@ -15,6 +15,7 @@ let burn = false;
 let burnCheat = false;
 let paulEgg = false;
 let paulChicken = false;
+let chickenEat = false;
 let chickenCheat = false;
 let sacrificeCheat = false;
 
@@ -276,6 +277,7 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct) {
       setCurrentRule(10);
+      // setIsGameOver(false);
       if (!burn && !burnCheat) {
         newWarnings.fire = true;
         setInputValue(prev => prev + fireEmoji);
@@ -286,6 +288,9 @@ export default function Home() {
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire) {
       setCurrentRule(11);
       newWarnings.egg = !/[🥚🐔]/.test(inputValue);
+      // if (paulEgg && newWarnings.egg) {
+      //   setIsGameOver(true);
+      // }
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg) {
       setCurrentRule(12);
@@ -297,11 +302,13 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear) {
       setCurrentRule(14);
-      newWarnings.chicken = !caterpillarPattern.test(inputValue);
+      newWarnings.chicken = !((inputValue.match(/🐛/gi) || []).length >= 3);
+      chickenEat = !newWarnings.chicken;
+      // newWarnings.chicken = !caterpillarPattern.test(inputValue);
       if (!paulChicken && !fireEmojiPattern.test(inputValue) && newWarnings.chicken && !chickenCheat) {
         paulChicken = true;
         setInputValue(inputValue.replace(/🥚/g, chickenEmoji));
-        // setInputValue(prev => prev + '🐛🐛🐛🐛🐛🐛')
+        setInputValue(prev => prev + '🐛🐛🐛')
       }
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken) {
@@ -591,8 +598,14 @@ export default function Home() {
 
   useEffect(() => {
     if (currentRule === 10 && !paulEgg && !inputValue.includes(fireEmoji)) {
-      setInputValue((prev) => prev + eggEmoji);
       paulEgg = true;
+      setInputValue((prev) => prev + eggEmoji);
+    }
+    if (paulEgg && (inputValue.includes(eggEmoji) || inputValue.includes(chickenEmoji))) {
+      setIsGameOver(false);
+    }
+    else if (paulEgg && !inputValue.includes(eggEmoji)) {
+      setIsGameOver(true);
     }
   }, [inputValue]);
 
@@ -600,11 +613,16 @@ export default function Home() {
     const interval = setInterval(() => {
       setInputValue(prevValue => {
         if (paulChicken) {
-          let newValue = prevValue;
-          for (let i = 0; i < 3; i++) {
-            newValue = newValue.replace('🐛', '');
+          if (!chickenEat) {
+            setIsGameOver(true);
           }
-          return newValue;
+          else {
+            let newValue = prevValue;
+            for (let i = 0; i < 3; i++) {
+              newValue = newValue.replace('🐛', '');
+            }
+            return newValue;
+          }
         }
         return prevValue;
       });
