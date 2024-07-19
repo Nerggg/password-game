@@ -544,15 +544,13 @@ export default function Home() {
           setInputValue(temp + '9'.repeat(remaining) + (target + correction - 1) + (Lengthtarget - (correction - 1)));
           break;    
         }
-        // rule 20 nya masi ngebug gatau dah
-        // 8Aaaaaaa"99apriljapanXXIV🐔375pfw1🐛I want IRK0000000000000000000000000000000000000000000000000000040006107
-        // 8Aaaaaaa"apriljapanXXIV🐔375pfw1🐛I want IRK000000000000000000000000000000000000000000000000000004000614:279111
         case 20: {
           let temp = inputValue.replace('cheat', '');
           temp = temp.length >= 98 ? temp.slice(0, temp.length - 3) : temp.slice(0, temp.length - 2);
           temp = temp + getCurrentTime();
           let remainingPrime = nextPrime(temp.length) - temp.length;
-          temp = temp + '0'.repeat(remainingPrime);
+          // temp = temp + '0'.repeat(remainingPrime);
+          temp = temp.length >= 98 ? temp + '0'.repeat(remainingPrime + 1) : temp + '0'.repeat(remainingPrime);
           let Lengthtarget = temp.length >= 98 ? temp.length + 3 : temp.length + 2;
           let target = 60 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
           let correction = 0;
