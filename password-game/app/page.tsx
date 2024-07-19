@@ -38,6 +38,7 @@ export default function Home() {
   const [currentRule, setCurrentRule] = useState(1);
   const [inputValue, setInputValue] = useState('');
   const [isGameOver, setIsGameOver] = useState(false);
+  const [isWin, setIsWin] = useState(false);
   const [warnings, setWarnings] = useState({
     length: false,
     number: false,
@@ -342,6 +343,9 @@ export default function Home() {
       setCurrentRule(20);
       newWarnings.time = !inputValue.includes(getCurrentTime());
     }
+    if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken && !newWarnings.sacrifice && !newWarnings.words && !newWarnings.digits && !newWarnings.includeLength && !newWarnings.prime && !newWarnings.time) {
+      setIsWin(true);
+    }
     setWarnings(newWarnings);
 
     const cheatIndex = inputValue.indexOf('cheat');
@@ -474,7 +478,7 @@ export default function Home() {
           break;    
         }
         case 14: {
-          setInputValue(inputValue.replace('cheat', '').replace(caterpillarPattern, '') + caterpillarEmoji);
+          setInputValue(inputValue.replace('cheat', '').replace(caterpillarPattern, '') + caterpillarEmoji.repeat(3));
           newWarnings.chicken = false;
           paulChicken = false;
           chickenCheat = true;
@@ -612,6 +616,9 @@ export default function Home() {
   useEffect(() => {
     const interval = setInterval(() => {
       setInputValue(prevValue => {
+        paulChicken = !isWin;
+        console.log("iswin ", isWin);
+        console.log("paul chicken ", paulChicken);
         if (paulChicken) {
           if (!chickenEat) {
             setIsGameOver(true);
@@ -794,11 +801,17 @@ export default function Home() {
         placeholder="Type a word..."
         maxLength={144}
         className="absolute top-0 w-full p-3 text-md border border-gray-300 rounded-lg text-transparent caret-black"
-        disabled={isGameOver}
+        disabled={isGameOver || isWin}
       />
       <div className="absolute top-0 w-full p-[13px] text-md z-10 text-black pointer-events-none">
         {highlight(inputValue)}
       </div>
+      {isWin && (
+        <div className='absolute top-0 w-full text-green-500 font-bold text-xl text-center'>menang wkwk</div>
+      )}
+      {isGameOver && !isWin && (
+        <div className='absolute top-0 w-full text-red-500 font-bold text-xl text-center'>kalah wkwk</div>
+      )}
       <div className='mt-16'>
         <div className='text-white'>Current Length: {inputValue.length}</div>
         {inputValue.length === 144 && (<div className=''>Maximum length reached!</div>)}
