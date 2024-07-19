@@ -15,11 +15,12 @@ let burn = false;
 let burnCheat = false;
 let paulEgg = false;
 let paulChicken = false;
-let chickenEat = false;
+let chickenEat = true;
 let chickenCheat = false;
 let sacrificeCheat = false;
 
 export default function Home() {
+  const inputRef = useRef(null);
   const handleInputValue = (e) => {
     const valueLower = e.target.value.toLowerCase();
     const containsRestrictedChars = restrictedChars.some(char => valueLower.includes(char));
@@ -37,7 +38,7 @@ export default function Home() {
 
   const [currentRule, setCurrentRule] = useState(1);
   const [inputValue, setInputValue] = useState('');
-  const [isGameOver, setIsGameOver] = useState(false);
+  const [isLose, setIsLose] = useState(false);
   const [isWin, setIsWin] = useState(false);
   const [warnings, setWarnings] = useState({
     length: false,
@@ -278,7 +279,7 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct) {
       setCurrentRule(10);
-      // setIsGameOver(false);
+      // setIsLose(false);
       if (!burn && !burnCheat) {
         newWarnings.fire = true;
         setInputValue(prev => prev + fireEmoji);
@@ -290,7 +291,7 @@ export default function Home() {
       setCurrentRule(11);
       newWarnings.egg = !/[🥚🐔]/.test(inputValue);
       // if (paulEgg && newWarnings.egg) {
-      //   setIsGameOver(true);
+      //   setIsLose(true);
       // }
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg) {
@@ -555,8 +556,8 @@ export default function Home() {
           temp = temp.length >= 98 ? temp.slice(0, temp.length - 3) : temp.slice(0, temp.length - 2);
           temp = temp + getCurrentTime();
           let remainingPrime = nextPrime(temp.length) - temp.length;
-          // temp = temp + '0'.repeat(remainingPrime);
-          temp = temp.length >= 98 ? temp + '0'.repeat(remainingPrime + 1) : temp + '0'.repeat(remainingPrime);
+          temp = temp + '0'.repeat(remainingPrime);
+          // temp = temp.length >= 98 ? temp + '0'.repeat(remainingPrime + 1) : temp + '0'.repeat(remainingPrime);
           let Lengthtarget = temp.length >= 98 ? temp.length + 3 : temp.length + 2;
           let target = 60 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
           let correction = 0;
@@ -606,10 +607,10 @@ export default function Home() {
       setInputValue((prev) => prev + eggEmoji);
     }
     if (paulEgg && (inputValue.includes(eggEmoji) || inputValue.includes(chickenEmoji))) {
-      setIsGameOver(false);
+      setIsLose(false);
     }
     else if (paulEgg && !inputValue.includes(eggEmoji)) {
-      setIsGameOver(true);
+      setIsLose(true);
     }
   }, [inputValue]);
 
@@ -621,7 +622,7 @@ export default function Home() {
         console.log("paul chicken ", paulChicken);
         if (paulChicken) {
           if (!chickenEat) {
-            setIsGameOver(true);
+            setIsLose(true);
           }
           else {
             let newValue = prevValue;
@@ -801,7 +802,7 @@ export default function Home() {
         placeholder="Type a word..."
         maxLength={144}
         className="absolute top-0 w-full p-3 text-md border border-gray-300 rounded-lg text-transparent caret-black"
-        disabled={isGameOver || isWin}
+        disabled={isLose || isWin}
       />
       <div className="absolute top-0 w-full p-[13px] text-md z-10 text-black pointer-events-none">
         {highlight(inputValue)}
@@ -809,7 +810,7 @@ export default function Home() {
       {isWin && (
         <div className='absolute top-0 w-full text-green-500 font-bold text-xl text-center'>menang wkwk</div>
       )}
-      {isGameOver && !isWin && (
+      {isLose && !isWin && (
         <div className='absolute top-0 w-full text-red-500 font-bold text-xl text-center'>kalah wkwk</div>
       )}
       <div className='mt-16'>
