@@ -6,6 +6,7 @@ import next from 'next';
 import { ClientPageRoot } from 'next/dist/client/components/client-page';
 import { Special_Elite } from 'next/font/google';
 import { spec } from 'node:test/reporters';
+import { setUncaughtExceptionCaptureCallback } from 'process';
 import { useState, useEffect, useRef } from 'react';
 
 let fetchedCountry: { answer: string; image: string }[] | null = null;
@@ -202,19 +203,15 @@ export default function Home() {
     }
   }, []);
 
+  const fetchCaptcha = async () => {
+    const response = await fetch('/api/captcha');
+    const data = await response.json();
+    setCaptchaImages(data);
+    setCaptchas(data.map((img: { answer: string }) => img.answer));
+  };
+
   useEffect(() => {
-    if (!fetchedCaptcha) {
-      fetch('/api/captcha')
-        .then(response => response.json())
-        .then(data => {
-          fetchedCaptcha = data;
-          setCaptchaImages(data);
-          setCaptchas(data.map((img: { answer: string }) => img.answer));
-        });
-    } else {
-      setCaptchaImages(fetchedCaptcha);
-      setCaptchas(fetchedCaptcha.map((img: { answer: string }) => img.answer));
-    }
+    fetchCaptcha();
   }, []);
 
   useEffect(() => {
@@ -716,7 +713,7 @@ export default function Home() {
     },
     {
       name: 'chicken',
-      message: '🐔 Paul has hatched ! Please don’t forget to feed him. He eats 3 🐛 every 10 second. We give you free 🐛 for now :D',
+      message: '🐔 Paul has hatched ! Please don’t forget to feed him. He eats 3 🐛 every 10 second.',
       fulfilledMessage: 'Rule 14 fulfilled',
       unfulfilledMessage: 'Rule 14 not fulfilled',
       images: null,
@@ -836,6 +833,9 @@ export default function Home() {
                             alt="image"
                             className="w-40 h-auto"
                           />
+                          {currentRule === 12 && (
+                            <button onClick={fetchCaptcha} className="mt-2 p-2 bg-blue-500 text-white rounded">Refresh</button>
+                          )}
                         </div>
                       ))}
                     </div>
