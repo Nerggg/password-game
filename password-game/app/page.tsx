@@ -81,7 +81,7 @@ export default function Home() {
   const calcDigitSum = (inputValue: string) => {
     const digits = inputValue.match(/\d/g);
     const digitSum = digits ? digits.reduce((acc, digit) => acc + parseInt(digit), 0) : 0;
-    // console.log("current sum: ", digitSum);
+    console.log("current sum: ", digitSum);
     return digitSum;
   }
 
@@ -259,7 +259,7 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter) {
       setCurrentRule(5);
-      newWarnings.digitSum = !checkDigitSum(inputValue, 60);
+      newWarnings.digitSum = !checkDigitSum(inputValue, 99);
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum) {
       setCurrentRule(6);
@@ -304,7 +304,8 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear) {
       setCurrentRule(14);
-      newWarnings.chicken = !((inputValue.match(/🐛/gi) || []).length >= 3);
+      // newWarnings.chicken = !((inputValue.match(/🐛/gi) || []).length >= 3);
+      newWarnings.chicken = isWin ? false : !((inputValue.match(/🐛/gi) || []).length >= 3);
       chickenEat = !newWarnings.chicken;
       // newWarnings.chicken = !caterpillarPattern.test(inputValue);
       if (!paulChicken && !fireEmojiPattern.test(inputValue) && newWarnings.chicken && !chickenCheat) {
@@ -334,7 +335,7 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken && !newWarnings.sacrifice && !newWarnings.words && !newWarnings.digits) {
       setCurrentRule(18);
-      newWarnings.includeLength = !inputValue.includes(inputValue.length.toString());
+      newWarnings.includeLength = isWin ? false : !inputValue.includes(inputValue.length.toString());
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear && !newWarnings.chicken && !newWarnings.sacrifice && !newWarnings.words && !newWarnings.digits && !newWarnings.includeLength) {
       setCurrentRule(19);
@@ -385,11 +386,11 @@ export default function Home() {
         }
         case 5: {
           let temp = inputValue;
-          let target = 60 - calcDigitSum(temp);
+          let target = 99 - calcDigitSum(temp);
           while (target < 0) {
             const idx = temp.search(/\d/);
             temp = temp.slice(0, idx) + temp.slice(idx + 1);
-            target = 60 - calcDigitSum(temp);
+            target = 99 - calcDigitSum(temp);
           }
           let remaining = 0;
           while (target >= 10) {
@@ -431,11 +432,11 @@ export default function Home() {
         }
         case 12: {
           let temp = inputValue;
-          let target = 60 - calcDigitSum(temp) - calcDigitSum(captchas[0]);
+          let target = 99 - calcDigitSum(temp) - calcDigitSum(captchas[0]);
           while (target < 0) {
             let idx = temp.search(/\d/);
             temp = temp.slice(0, idx) + temp.slice(idx + 1);
-            target = 60 - calcDigitSum(temp) - calcDigitSum(captchas[0]);
+            target = 99 - calcDigitSum(temp) - calcDigitSum(captchas[0]);
           }
           let remaining = 0;
           while (target >= 10) {
@@ -459,11 +460,11 @@ export default function Home() {
           } while (!(year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)));
 
           let temp = inputValue;
-          let target = 60 - calcDigitSum(temp) - calcDigitSum(String(year));
+          let target = 99 - calcDigitSum(temp) - calcDigitSum(String(year));
           while (target < 0) {
             const idx = temp.search(/\d/);
             temp = temp.slice(0, idx) + temp.slice(idx + 1);
-            target = 60 - calcDigitSum(temp) - calcDigitSum(String(year));
+            target = 99 - calcDigitSum(temp) - calcDigitSum(String(year));
           }
           let remaining = 0;
           while (target >= 10) {
@@ -505,7 +506,7 @@ export default function Home() {
         case 18: {
           let temp = inputValue.replace('cheat', '');
           let Lengthtarget = temp.length >= 98 ? temp.length + 3 : temp.length + 2;
-          let target = 60 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
+          let target = 99 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
           let correction = 0;
           while (target < 0) {
             let idx = temp.search(/\d/);
@@ -513,7 +514,7 @@ export default function Home() {
               idx = temp.slice(1).search(/\d/) + 1;
             }
             temp = temp.slice(0, idx) + temp.slice(idx + 1);
-            target = 60 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
+            target = 99 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
             correction++;
           }
           let remaining = 0;
@@ -527,57 +528,48 @@ export default function Home() {
         }
         case 19: {
           let temp = inputValue.replace('cheat', '');
-          let remainingPrime = nextPrime(temp.length) - temp.length;
-          temp = temp.length >= 98 ? temp.slice(0, temp.length - 3) : temp.slice(0, temp.length - 2);
-          temp = temp + '0'.repeat(remainingPrime);
-          let Lengthtarget = temp.length >= 98 ? temp.length + 3 : temp.length + 2;
-          let target = 60 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
-          let correction = 0;
+          let remainingPrime = temp.length >= 98 ? nextPrime(temp.length + 4) - temp.length : nextPrime(temp.length + 3) - temp.length;
+          temp = temp.length >= 98 ? temp + '0'.repeat(remainingPrime - 4) : temp + '0'.repeat(remainingPrime - 3);
+          let Lengthtarget = temp.length >= 98 ? temp.length + 4 : temp.length + 3;
+          let target = 99 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
           while (target < 0) {
             let idx = temp.search(/\d/);
             if (idx === 0) {
               idx = temp.slice(1).search(/\d/) + 1;
             }
-            temp = temp.slice(0, idx) + temp.slice(idx + 1);
-            target = 60 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
-            correction++;
+            temp = temp.slice(0, idx) + temp.slice(idx + 1) + '0';
+            target = 99 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
           }
           let remaining = 0;
           while (target >= 10) {
             target -= 9;
             remaining += 1;
-            correction--;
           }
-          setInputValue(temp + '9'.repeat(remaining) + (target + correction - 1) + (Lengthtarget - (correction - 1)));
+          setInputValue(temp + '9'.repeat(remaining) + target + Lengthtarget);
           break;    
         }
         case 20: {
           let temp = inputValue.replace('cheat', '');
-          temp = temp.length >= 98 ? temp.slice(0, temp.length - 3) : temp.slice(0, temp.length - 2);
           temp = temp + getCurrentTime();
-          let remainingPrime = nextPrime(temp.length) - temp.length;
-          temp = temp + '0'.repeat(remainingPrime);
-          // temp = temp.length >= 98 ? temp + '0'.repeat(remainingPrime + 1) : temp + '0'.repeat(remainingPrime);
-          let Lengthtarget = temp.length >= 98 ? temp.length + 3 : temp.length + 2;
-          let target = 60 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
-          let correction = 0;
+          let remainingPrime = temp.length >= 98 ? nextPrime(temp.length + 4) - temp.length : nextPrime(temp.length + 3) - temp.length;
+          temp = temp.length >= 98 ? temp + '0'.repeat(remainingPrime - 4) : temp + '0'.repeat(remainingPrime - 3);
+          let Lengthtarget = temp.length >= 98 ? temp.length + 4 : temp.length + 3;
+          let target = 99 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
           while (target < 0) {
             let idx = temp.search(/\d/);
             if (idx === 0) {
               idx = temp.slice(1).search(/\d/) + 1;
             }
-            temp = temp.slice(0, idx) + temp.slice(idx + 1);
-            target = 60 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
-            correction++;
+            temp = temp.slice(0, idx) + temp.slice(idx + 1) + '0';
+            target = 99 - calcDigitSum(temp) - calcDigitSum(String(Lengthtarget));
           }
           let remaining = 0;
           while (target >= 10) {
             target -= 9;
             remaining += 1;
-            correction--;
           }
-          setInputValue(temp + '9'.repeat(remaining) + (target + correction - 1) + (Lengthtarget - (correction - 1)));
-          break;   
+          setInputValue(temp + '9'.repeat(remaining) + target + Lengthtarget);
+          break;    
         }
       }
     }
@@ -617,9 +609,6 @@ export default function Home() {
   useEffect(() => {
     const interval = setInterval(() => {
       setInputValue(prevValue => {
-        paulChicken = !isWin;
-        console.log("iswin ", isWin);
-        console.log("paul chicken ", paulChicken);
         if (paulChicken) {
           if (!chickenEat) {
             setIsLose(true);
@@ -681,7 +670,7 @@ export default function Home() {
     },
     {
       name: 'digitSum',
-      message: 'The digits in your password must add up to 60.',
+      message: 'The digits in your password must add up to 99.',
       fulfilledMessage: 'Rule 5 fulfilled',
       unfulfilledMessage: 'Rule 5 not fulfilled',
       images: null,
@@ -804,14 +793,15 @@ export default function Home() {
         className="absolute top-0 w-full p-3 text-md border border-gray-300 rounded-lg text-transparent caret-black"
         disabled={isLose || isWin}
       />
+      {/* <div className='text-white mt-14'>{inputValue.slice(1, 2)}</div> */}
       <div className="absolute top-0 w-full p-[13px] text-md z-10 text-black pointer-events-none">
         {highlight(inputValue)}
       </div>
       {isWin && (
-        <div className='absolute top-0 w-full text-green-500 font-bold text-xl text-center'>menang wkwk</div>
+        <div className='absolute top-0 w-full text-green-500 font-bold text-xl text-center z-10'>menang wkwk</div>
       )}
       {isLose && !isWin && (
-        <div className='absolute top-0 w-full text-red-500 font-bold text-xl text-center'>kalah wkwk</div>
+        <div className='absolute top-0 w-full text-red-500 font-bold text-xl text-center z-10'>kalah wkwk</div>
       )}
       <div className='mt-16'>
         <div className='text-white'>Current Length: {inputValue.length}</div>
