@@ -150,7 +150,7 @@ export default function Home() {
   };
 
   const highlight = (text: string | number | bigint | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | Promise<AwaitedReactNode> | null | undefined) => {
-    if (currentRule === 5 || currentRule === 19) {
+    if (currentRule === 5 || currentRule === 18 || currentRule === 17) {
       return String(text).split('').map((char: string | number | bigint | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | Promise<AwaitedReactNode> | null | undefined, index: Key | null | undefined) => {
         if (/\d/.test(String(char))) {
           return (
