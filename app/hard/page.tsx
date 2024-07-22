@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, SetStateAction, AwaitedReactNode, JSXElementConstructor, Key, ReactElement, ReactNode } from 'react';
 
 let fetchedCountry: { answer: string; image: string }[] | null = null;
 let burn = false;
@@ -12,11 +12,11 @@ let chickenCheat = false;
 let sacrificeCheat = false;
 
 export default function Home() {
-  const handleInputValue = (e) => {
-    const valueLower = e.target.value.toLowerCase();
+  const handleInputValue = (e: { target: { value: SetStateAction<string>; }; }) => {
+    const valueLower = String(e.target.value).toLowerCase();
     const containsRestrictedChars = restrictedChars.some(char => valueLower.includes(char));
     if (containsRestrictedChars && restrictedChars.length !== 0) {
-      const regex = new RegExp(`[${restrictedChars[0].toLowerCase()}${restrictedChars[1].toLowerCase()}${restrictedChars[0].toUpperCase()}${restrictedChars[1].toUpperCase()}]`, 'g');
+      const regex = new RegExp(`[${String(restrictedChars[0]).toLowerCase()}${String(restrictedChars[1]).toLowerCase()}${String(restrictedChars[0]).toUpperCase()}${String(restrictedChars[1]).toUpperCase()}]`, 'g');
       const updatedValue = inputValue.replace(regex, '');
       setInputValue(updatedValue);
     }
@@ -65,8 +65,8 @@ export default function Home() {
   const eggPattern = new RegExp(eggEmoji, 'g');
   const chickenEmoji = String.fromCharCode(...[55357, 56340]);
   const chickenPattern = new RegExp(chickenEmoji, 'g');
-  const [rule15InputValue, setRule15InputValue] = useState('');
-  const [restrictedChars, setRestrictedChars] = useState([]);
+  const [rule15InputValue, setRule15InputValue] = useState<string>('');
+  const [restrictedChars, setRestrictedChars] = useState<string[]>([]);
   const [showRule15, setShowRule15] = useState(false);
 
   const calcDigitSum = (inputValue: string) => {
@@ -127,7 +127,7 @@ export default function Home() {
     return false;
   }
 
-  const isPrime = (num) => {
+  const isPrime = (num: number) => {
     if (num <= 1) return false;
     for (let i = 2; i <= Math.sqrt(num); i++) {
       if (num % i === 0) return false;
@@ -142,17 +142,17 @@ export default function Home() {
     return `${hours}:${minutes}`;
   };
 
-  const nextPrime = (num) => {
+  const nextPrime = (num: number) => {
     while (!isPrime(num)) {
       num++;
     }
     return num;
   };
 
-  const highlight = (text) => {
+  const highlight = (text: string | number | bigint | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | Promise<AwaitedReactNode> | null | undefined) => {
     if (currentRule === 5 || currentRule === 19) {
-      return text.split('').map((char, index) => {
-        if (/\d/.test(char)) {
+      return String(text).split('').map((char: string | number | bigint | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | Promise<AwaitedReactNode> | null | undefined, index: Key | null | undefined) => {
+        if (/\d/.test(String(char))) {
           return (
             <span key={index} className="bg-red-500">
               {char}
@@ -163,8 +163,8 @@ export default function Home() {
       });
     }
     else if (currentRule === 9) {
-      return text.split('').map((char, index) => {
-        if (/[IVXLCDM]+/g.test(char)) {
+      return String(text).split('').map((char: string | number | bigint | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | Promise<AwaitedReactNode> | null | undefined, index: Key | null | undefined) => {
+        if (/[IVXLCDM]+/g.test(String(char))) {
           return (
             <span key={index} className="bg-red-500">
               {char}
@@ -629,7 +629,7 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleRule15InputChange = (e) => {
+  const handleRule15InputChange = (e: { target: { value: any; }; }) => {
     const value = e.target.value;
     const uniqueValue = Array.from(new Set(value)).slice(0, 2).join('');
     setRule15InputValue(uniqueValue);
@@ -811,6 +811,9 @@ export default function Home() {
       <div className='mt-3'>
         <div className='text-white'>Current Length: {inputValue.length}</div>
         {inputValue.length === 144 && (<div className=''>Maximum length reached!</div>)}
+      </div>
+      <div className='mt-3'>
+        <div className='text-white'>Current Digit Sum: {calcDigitSum(inputValue)}</div>
       </div>
       {showRule15 && (
         <div className="mt-3 flex">
