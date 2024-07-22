@@ -12,14 +12,18 @@ export default function Home() {
       <h1 className="text-4xl font-bold mb-8">pASSword game :D</h1>
       <div className="flex flex-col space-y-4">
         <Link href="/easy" className="px-4 py-2 border text-white rounded-lg hover:bg-blue-700 text-center"
-            onMouseEnter={() => setHoverText('difficulty easy')}
+            onMouseEnter={() => setHoverText('masih ez lah ini')}
             onMouseLeave={() => setHoverText('')}>
             easy
         </Link>
-        <Link href="/medium" className="px-4 py-2 border text-white rounded-lg hover:bg-green-700 text-center">
+        <Link href="/medium" className="px-4 py-2 border text-white rounded-lg hover:bg-green-700 text-center"
+            onMouseEnter={() => setHoverText('paul lebih rakus karna pemanasan global')}
+            onMouseLeave={() => setHoverText('')}>
             Medium
         </Link>
-        <Link href="/hard" className="px-4 py-2 border text-white rounded-lg hover:bg-red-700 text-center">
+        <Link href="/hard" className="px-4 py-2 border text-white rounded-lg hover:bg-red-700 text-center"
+            onMouseEnter={() => setHoverText('pemanasan global tinggi bgt sampe apinya menembus ruang dan waktu')}
+            onMouseLeave={() => setHoverText('')}>
             harD
         </Link>
       </div>

@@ -7,7 +7,7 @@ let burn = false;
 let burnCheat = false;
 let paulEgg = false;
 let paulChicken = false;
-let chickenEat = true;
+let chickenEat = false;
 let chickenCheat = false;
 let sacrificeCheat = false;
 
@@ -23,14 +23,14 @@ export default function Home() {
     else {
       setInputValue(e.target.value);
     }
-    // console.log("current length: ", inputValue.length);
-    // console.log("current rule: ", currentRule);
+    chickenEat = ((inputValue.match(/🐛/gi) || []).length >= 3);
   };
 
   const [currentRule, setCurrentRule] = useState(1);
   const [inputValue, setInputValue] = useState('');
   const [isLose, setIsLose] = useState(false);
   const [isWin, setIsWin] = useState(false);
+  const [countdown, setCountdown] = useState(3600);
   const [warnings, setWarnings] = useState({
     length: false,
     number: false,
@@ -72,7 +72,7 @@ export default function Home() {
   const calcDigitSum = (inputValue: string) => {
     const digits = inputValue.match(/\d/g);
     const digitSum = digits ? digits.reduce((acc, digit) => acc + parseInt(digit), 0) : 0;
-    console.log("current sum: ", digitSum);
+    chickenEat = ((inputValue.match(/🐛/gi) || []).length >= 3);
     return digitSum;
   }
 
@@ -206,6 +206,23 @@ export default function Home() {
   };
 
   useEffect(() => {
+    if (countdown > 0) {
+      if (!isWin && !isLose) {
+        const timer = setInterval(() => {
+          setCountdown(prevCountdown => prevCountdown - 1);
+        }, 1000);
+  
+        return () => clearInterval(timer);
+      }
+      else if (isLose) {
+        setCountdown(0);
+      } 
+    } else {
+      setIsLose(true);
+    }
+  }, [countdown]);
+
+  useEffect(() => {
     fetchCaptcha();
   }, []);
 
@@ -270,7 +287,6 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct) {
       setCurrentRule(10);
-      // setIsLose(false);
       if (!burn && !burnCheat) {
         newWarnings.fire = true;
         setInputValue(prev => prev + fireEmoji);
@@ -281,9 +297,6 @@ export default function Home() {
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire) {
       setCurrentRule(11);
       newWarnings.egg = !/[🥚🐔]/.test(inputValue);
-      // if (paulEgg && newWarnings.egg) {
-      //   setIsLose(true);
-      // }
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg) {
       setCurrentRule(12);
@@ -295,10 +308,7 @@ export default function Home() {
     }
     if (!newWarnings.length && !newWarnings.number && !newWarnings.uppercase && !newWarnings.specialCharacter && !newWarnings.digitSum && !newWarnings.month && !newWarnings.romanNumeral && !newWarnings.country && !newWarnings.romanProduct && !newWarnings.fire && !newWarnings.egg && !newWarnings.captcha && !newWarnings.leapYear) {
       setCurrentRule(14);
-      // newWarnings.chicken = !((inputValue.match(/🐛/gi) || []).length >= 3);
       newWarnings.chicken = isWin ? false : !((inputValue.match(/🐛/gi) || []).length >= 3);
-      chickenEat = !newWarnings.chicken;
-      // newWarnings.chicken = !caterpillarPattern.test(inputValue);
       if (!paulChicken && !fireEmojiPattern.test(inputValue) && newWarnings.chicken && !chickenCheat) {
         paulChicken = true;
         setInputValue(inputValue.replace(/🥚/g, chickenEmoji));
@@ -580,12 +590,12 @@ export default function Home() {
         }
         return prev;
       });
-    }, 10000);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    if (currentRule === 10 && !paulEgg && !inputValue.includes(fireEmoji)) {
+    if (currentRule === 10 && !paulEgg && !inputValue.includes(fireEmoji) && !inputValue.includes(chickenEmoji)) {
       paulEgg = true;
       setInputValue((prev) => prev + eggEmoji);
     }
@@ -601,16 +611,16 @@ export default function Home() {
     const interval = setInterval(() => {
       setInputValue(prevValue => {
         if (paulChicken) {
+          let newValue = prevValue;
           if (!chickenEat) {
-            setIsLose(true);
+            newValue = newValue.replace('🐔', '');
           }
           else {
-            let newValue = prevValue;
             for (let i = 0; i < 3; i++) {
               newValue = newValue.replace('🐛', '');
             }
-            return newValue;
           }
+          return newValue;
         }
         return prevValue;
       });
@@ -781,11 +791,11 @@ export default function Home() {
         onChange={handleInputValue}
         placeholder="Type a word..."
         maxLength={144}
-        className="absolute top-0 w-full p-3 text-md border border-gray-300 rounded-lg text-transparent caret-black"
+        className="absolute top-0 w-full p-3 text-sm border border-gray-300 rounded-lg text-transparent caret-black"
         disabled={isLose || isWin}
       />
       {/* <div className='text-white mt-14'>{inputValue.slice(1, 2)}</div> */}
-      <div className="absolute top-0 w-full p-[13px] text-md z-10 text-black pointer-events-none">
+      <div className="absolute top-0 w-full p-[13px] text-sm z-10 text-black pointer-events-none">
         {highlight(inputValue)}
       </div>
       {isWin && (
@@ -795,8 +805,14 @@ export default function Home() {
         <div className='absolute top-0 w-full text-red-500 font-bold text-xl text-center z-10'>kalah wkwk</div>
       )}
       <div className='mt-16'>
+        <div className='text-white'>Score: {countdown}</div>
+      </div>
+      <div className='mt-3'>
         <div className='text-white'>Current Length: {inputValue.length}</div>
         {inputValue.length === 144 && (<div className=''>Maximum length reached!</div>)}
+      </div>
+      <div className='mt-3'>
+        <div className='text-white'>Current Digit Sum: {calcDigitSum(inputValue)}</div>
       </div>
       {showRule15 && (
         <div className="mt-3 flex">
