@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, SetStateAction, AwaitedReactNode, JSXElementConstructor, Key, ReactElement, ReactNode } from 'react';
+import { useState, useEffect, SetStateAction, AwaitedReactNode, JSXElementConstructor, Key, ReactElement, ReactNode, ChangeEvent } from 'react';
 
 let fetchedCountry: { answer: string; image: string }[] | null = null;
 let burn = false;
@@ -181,6 +181,77 @@ export default function Home() {
         </span>
       );
     }
+  };
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target?.result as string;
+        const lines = content.split('\n');
+        if (lines.length > 0) {
+          setInputValue(lines[0]);
+        }
+        if (lines.length > 1) {
+          setCountdown(Number(lines[1]));
+        }
+        if (lines.length > 2) {
+          fetchCountryLoad(lines[2], lines[3], lines[4]);
+        }
+        if (lines.length > 5) {
+          fetchCaptchaLoad(lines[5]);
+        }
+        if (lines.length > 6 && (lines[6].length !== 0)) {
+          setRestrictedChars([lines[6], lines[7]])
+        }
+        if (lines.length > 8) {
+          burnCheat = lines[8] === 'true' ? true : false;
+        }
+        if (lines.length > 9) {
+          chickenCheat = lines[9] === 'true' ? true : false;
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const handleLoadClick = () => {
+    document.getElementById('fileInput')?.click();
+  };
+
+  const handleSaveClick = () => {
+    const blob = restrictedChars.length === 0 ? new Blob([`${inputValue}\n${countdown}\n${countries[0]}\n${countries[1]}\n${countries[2]}\n${captchas[0]}\n\n\n${burnCheat}\n${chickenCheat}`], { type: 'text/plain;charset=utf-8' }) : new Blob([`${inputValue}\n${countdown}\n${countries[0]}\n${countries[1]}\n${countries[2]}\n${captchas[0]}\n${restrictedChars[0]}\n${restrictedChars[1]}\n${burnCheat}\n${chickenCheat}`], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'save.txt';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const fetchCountryLoad = async (country1: any, country2: any, country3: any) => {
+    const countryNames = [country1, country2, country3];
+    const response = await fetch(`/api/country?countryNames=${countryNames.join(',')}`);
+    const data = await response.json();
+    setCountryImage(data);
+    setCountries(data.map((img: { answer: string }) => img.answer));
+
+    console.log(data);
+  };
+  
+  const fetchCaptchaLoad = async (captchaName: any) => {
+    const response = await fetch(`/api/captcha?captchaName=${captchaName}`);
+    const data = await response.json();
+    if (data.error) {
+      console.error(data.error);
+    } else {
+      setCaptchaImages(data);
+      setCaptchas(data.map((img: { answer: string }) => img.answer));
+    }
+    console.log(data);
   };
 
   useEffect(() => {
@@ -804,7 +875,18 @@ export default function Home() {
       {isLose && !isWin && (
         <div className='absolute top-0 w-full text-red-500 font-bold text-xl text-center z-10'>kalah wkwk</div>
       )}
-      <div className='mt-16'>
+      <div className='mt-14'>
+        <button onClick={handleSaveClick} className='mx-2 px-4 py-2 rounded-lg bg-blue-500'>Save</button>
+        <button onClick={handleLoadClick} className='mx-2 px-4 py-2 rounded-lg bg-blue-500'>Load</button>
+        <input
+          type="file"
+          id="fileInput"
+          accept=".txt"
+          onChange={handleFileChange}
+          className="hidden"
+        />
+      </div>
+      <div className='mt-3'>
         <div className='text-white'>Score: {countdown}</div>
       </div>
       <div className='mt-3'>
