@@ -81,6 +81,11 @@ Maksudnya sederhana bagaimana? Jika dilihat, KMP dan BM membutuhkan fungsi pemba
     npm run dev
     ```
 
+Atau jika ingin menggunakan Docker, cukup jalankan program dengan perintah berikut
+``` bash
+docker compose up
+```
+
 ## Tangkapan Layar
 
 ![1](images/1.png)
