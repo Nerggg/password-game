@@ -20,6 +20,7 @@ The Password Game adalah permainan puzzle berbasis web. Pemain ditugaskan untuk 
 - Tailwind CSS
 - SQLite3
 - TypeScript
+- Docker
 
 ## Struktur Program
 
